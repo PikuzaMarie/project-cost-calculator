@@ -8,7 +8,7 @@ const App = () => {
 		<Router>
 			<Routes>
 				<Route
-					path="/login"
+					path="/"
 					element={<LoginPage />}
 				/>
 				<Route
