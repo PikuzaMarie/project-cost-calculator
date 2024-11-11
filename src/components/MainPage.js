@@ -1,6 +1,8 @@
-// src/pages/HomePage.js
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import MainHeader from "./MainPageComponents/MainHeader";
+import MainProjects from "./MainPageComponents/MainProjects";
+import { Box } from "@mui/material";
 
 const HomePage = () => {
 	const [user, setUser] = useState(null);
@@ -17,16 +19,18 @@ const HomePage = () => {
 	}, [navigate]);
 
 	return (
-		<div>
-			{user ? (
+		<Box>
+			<MainHeader />
+			<MainProjects />
+			{/* {user ? (
 				<div>
 					<h2>Welcome, {user.email}</h2>
 					<p>Role: {user.role}</p>
 				</div>
 			) : (
 				<p>Loading...</p>
-			)}
-		</div>
+			)} */}
+		</Box>
 	);
 };
 
