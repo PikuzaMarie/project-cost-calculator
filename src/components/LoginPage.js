@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Logo from "../functions_24dp_0000F5_FILL0_wght400_GRAD0_opsz24.svg";
+import CalculateIcon from "@mui/icons-material/Calculate";
 import {
 	TextField,
 	Button,
@@ -57,10 +57,12 @@ const LoginPage = () => {
 						borderRadius: 2,
 						boxShadow: 3,
 					}}>
-					<img
-						src={Logo}
-						alt="Logo"
-						style={{ width: "50px", marginBottom: "20px" }}
+					<CalculateIcon
+						fontSize="large"
+						color="primary"
+						sx={{
+							marginBottom: "10px",
+						}}
 					/>
 					<Box
 						sx={{
