@@ -9,44 +9,22 @@ import {
 	Breadcrumbs,
 	Link,
 } from "@mui/material";
-import CreateProjectForm from "./MainPageComponents/CreateProjectForm";
-import ProjectDetails from "./MainPageComponents/ProjectDetails";
-import MainHeader from "./MainPageComponents/MainHeader";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import CreateProjectForm from "./CreateProjectForm";
+import ProjectDetails from "./ProjectDetails";
+import MainHeader from "./MainHeader";
 
 const ProjectsPage = () => {
+	const navigate = useNavigate();
 	const [projects, setProjects] = useState([]);
 	const [open, setOpen] = useState(false);
 	const [page, setPage] = useState(1);
 	const projectsPerPage = 5;
-	const [error, setError] = useState(null);
-
-	const token = localStorage.getItem("token");
 
 	useEffect(() => {
-		if (token) {
-			const fetchProjects = async () => {
-				try {
-					const response = await axios.get(
-						"http://localhost:5000/home/projects",
-						{
-							headers: {
-								Authorization: `Bearer ${token}`,
-							},
-						}
-					);
-					setProjects(response.data);
-				} catch (err) {
-					setError("Failed to fetch projects.");
-				}
-			};
-
-			fetchProjects();
-		} else {
-			setError("Not authorized");
-			console.error("Error occured", error);
-		}
-	}, [token]);
+		const storedProjects = JSON.parse(localStorage.getItem("projects")) || [];
+		setProjects(storedProjects);
+	}, []);
 
 	const handleChangePage = (event, value) => {
 		setPage(value);
@@ -60,8 +38,15 @@ const ProjectsPage = () => {
 	);
 
 	const addNewProject = (project) => {
-		setProjects([project, ...projects]);
+		const newProject = { ...project, id: Date.now() };
+		const updatedProjects = [newProject, ...projects];
+		setProjects(updatedProjects);
+		localStorage.setItem("projects", JSON.stringify(updatedProjects));
 		setOpen(false);
+	};
+
+	const handleEditProject = (id) => {
+		navigate(`/home/projects/${id}`);
 	};
 
 	return (
@@ -89,7 +74,6 @@ const ProjectsPage = () => {
 						gutterBottom>
 						Total Projects: {projects.length}
 					</Typography>
-
 					<Button
 						variant="contained"
 						color="primary"
@@ -102,9 +86,10 @@ const ProjectsPage = () => {
 				<Box sx={{ padding: "20px", backgroundColor: "#f5f5f5" }}>
 					{currentProjects.length > 0 ? (
 						<List>
-							{currentProjects.map((project, index) => (
-								<ListItem key={index}>
+							{currentProjects.map((project) => (
+								<ListItem key={project.id}>
 									<ProjectDetails
+										projectId={project.id}
 										projectName={project.projectName}
 										clientName={project.clientName}
 										projectDescription={project.projectDescription}
@@ -112,15 +97,17 @@ const ProjectsPage = () => {
 										createdDate={project.createdDate}
 										closedDate={project.closedDate}
 										reports={project.reports}
-										onCreateReport={() =>
-											console.log("Create Report for", project.projectName)
-										} // Логика создания отчета
-										onEditProject={() =>
-											console.log("Edit Project", project.projectName)
-										} // Логика редактирования
+										onEditProject={() => handleEditProject(project.id)}
 										onDeleteProject={() => {
-											setProjects(projects.filter((_, i) => i !== index));
-										}} // Логика удаления проекта
+											const updatedProjects = projects.filter(
+												(p) => p.id !== project.id
+											);
+											setProjects(updatedProjects);
+											localStorage.setItem(
+												"projects",
+												JSON.stringify(updatedProjects)
+											);
+										}}
 									/>
 								</ListItem>
 							))}

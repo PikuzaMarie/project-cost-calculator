@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import MainHeader from "./MainPageComponents/MainHeader";
-import MainProjects from "./ProjectsPage";
+import MainHeader from "./MainHeader";
 import { Box, Button, Typography } from "@mui/material";
 
 const HomePage = () => {
@@ -46,14 +45,6 @@ const HomePage = () => {
 					Go to Projects
 				</Button>
 			</Box>
-			{/* {user ? (
-				<div>
-					<h2>Welcome, {user.email}</h2>
-					<p>Role: {user.role}</p>
-				</div>
-			) : (
-				<p>Loading...</p>
-			)} */}
 		</Box>
 	);
 };
