@@ -26,8 +26,8 @@ const LoginPage = () => {
 				email,
 				password,
 			});
-			localStorage.setItem("token", response.data.token); // Сохраняем JWT в localStorage
-			navigate("/home"); // Перенаправляем на домашнюю страницу
+			localStorage.setItem("token", response.data.token);
+			navigate("/home");
 		} catch (err) {
 			setError(err.response?.data?.message || "Something went wrong");
 		}
