@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 
 const CreateProjectForm = ({ open, onClose, onSubmit }) => {
-	// Состояния для полей формы
 	const [projectName, setProjectName] = useState("");
 	const [clientName, setClientName] = useState("");
 	const [projectDescription, setProjectDescription] = useState("");
@@ -20,7 +19,6 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 	const [createdDate, setCreatedDate] = useState("");
 	const [closedDate, setClosedDate] = useState("");
 
-	// Обработчик отправки формы
 	const handleSubmit = () => {
 		const newProject = {
 			projectName,
@@ -29,9 +27,9 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 			projectStatus,
 			createdDate,
 			closedDate,
-			reports: [], // Пустой список отчетов для нового проекта
+			reports: [],
 		};
-		onSubmit(newProject); // Передаем данные родительскому компоненту
+		onSubmit(newProject);
 	};
 
 	return (
