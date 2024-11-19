@@ -15,7 +15,8 @@ const CreateReportForm = () => {
 	// Отчеты из хранилища
 	const reports = useSelector((state) => state.reports.reports || []);
 	const report = reports.find((r) => r.projectId === projectId);
-	const employeeId = 1; //нужно переписать на динамическое получение Id
+
+	const employeeid = useSelector((state) => state.employee.data?.id);
 
 	// Локальные состояния для формы
 	const [reportName, setReportName] = useState("");
@@ -54,11 +55,16 @@ const CreateReportForm = () => {
 			return;
 		}
 
+		if (!employeeid) {
+			setError("Employee ID is missing. Please log in again.");
+			return;
+		}
+
 		// Создаем объект report с необходимыми данными
 		const reportData = {
 			reportname: reportName,
 			totalcost: parseFloat(totalCost),
-			reportauthor: employeeId,
+			reportauthor: employeeid,
 		};
 
 		try {
