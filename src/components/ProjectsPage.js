@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
 	Button,
 	Box,
@@ -13,18 +14,29 @@ import { useNavigate } from "react-router-dom";
 import CreateProjectForm from "./CreateProjectForm";
 import ProjectDetails from "./ProjectDetails";
 import MainHeader from "./MainHeader";
+import {
+	fetchProjects,
+	addProject,
+	deleteProject,
+} from "../store/projectsSlice";
 
 const ProjectsPage = () => {
 	const navigate = useNavigate();
-	const [projects, setProjects] = useState([]);
+	const dispatch = useDispatch();
+	const { projects, error } = useSelector((state) => state.projects);
 	const [open, setOpen] = useState(false);
 	const [page, setPage] = useState(1);
-	const projectsPerPage = 5;
+	const projectsPerPage = 2;
 
 	useEffect(() => {
-		const storedProjects = JSON.parse(localStorage.getItem("projects")) || [];
-		setProjects(storedProjects);
-	}, []);
+		const token = localStorage.getItem("token");
+
+		if (!token) {
+			navigate("/login");
+		} else {
+			dispatch(fetchProjects(token));
+		}
+	}, [dispatch, navigate]);
 
 	const handleChangePage = (event, value) => {
 		setPage(value);
@@ -37,16 +49,21 @@ const ProjectsPage = () => {
 		indexOfLastProject
 	);
 
-	const addNewProject = (project) => {
-		const newProject = { ...project, id: Date.now() };
-		const updatedProjects = [newProject, ...projects];
-		setProjects(updatedProjects);
-		localStorage.setItem("projects", JSON.stringify(updatedProjects));
-		setOpen(false);
-	};
-
 	const handleEditProject = (id) => {
 		navigate(`/home/projects/${id}`);
+	};
+
+	const handleDeleteProject = (projectId) => {
+		dispatch(deleteProject(projectId));
+	};
+
+	const addNewProject = (project) => {
+		const newProject = {
+			...project,
+			projectstatus: "active",
+		};
+		dispatch(addProject(newProject));
+		setOpen(false);
 	};
 
 	return (
@@ -83,6 +100,14 @@ const ProjectsPage = () => {
 					</Button>
 				</Box>
 
+				{error && (
+					<Typography
+						variant="body2"
+						sx={{ color: "error.main", textAlign: "center" }}>
+						{error}
+					</Typography>
+				)}
+
 				<Box sx={{ padding: "20px", backgroundColor: "#f5f5f5" }}>
 					{currentProjects.length > 0 ? (
 						<List>
@@ -90,24 +115,15 @@ const ProjectsPage = () => {
 								<ListItem key={project.id}>
 									<ProjectDetails
 										projectId={project.id}
-										projectName={project.projectName}
-										clientName={project.clientName}
-										projectDescription={project.projectDescription}
-										projectStatus={project.projectStatus}
-										createdDate={project.createdDate}
-										closedDate={project.closedDate}
+										projectName={project.projectname}
+										clientName={project.clientname}
+										cost={project.cost}
+										projectDescription={project.projectdescription}
+										projectStatus={project.projectstatus}
+										createdDate={project.createddate}
 										reports={project.reports}
 										onEditProject={() => handleEditProject(project.id)}
-										onDeleteProject={() => {
-											const updatedProjects = projects.filter(
-												(p) => p.id !== project.id
-											);
-											setProjects(updatedProjects);
-											localStorage.setItem(
-												"projects",
-												JSON.stringify(updatedProjects)
-											);
-										}}
+										onDeleteProject={() => handleDeleteProject(project.id)}
 									/>
 								</ListItem>
 							))}

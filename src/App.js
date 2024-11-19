@@ -4,8 +4,8 @@ import LoginPage from "./components/LoginPage";
 import MainPage from "./components/MainPage";
 import ProjectsPage from "./components/ProjectsPage";
 import EditProject from "./components/EditProject";
-import CostReportPage from "./components/ConstReportPage";
-import ReportPage from "./components/ReportPage";
+import CreateReportForm from "./components/CreateReportForm";
+import ReportDetails from "./components/ReportDetails";
 
 const App = () => {
 	return (
@@ -27,13 +27,14 @@ const App = () => {
 					path="/home/projects/:projectId"
 					element={<EditProject />}
 				/>
+
 				<Route
-					path="/newreport/:projectId"
-					element={<CostReportPage />}
+					path="/home/projects/:projectId/report"
+					element={<CreateReportForm />}
 				/>
 				<Route
 					path="/home/projects/:projectId/report/:reportId"
-					element={<ReportPage />}
+					element={<ReportDetails />}
 				/>
 			</Routes>
 		</Router>
