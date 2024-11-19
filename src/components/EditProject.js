@@ -12,56 +12,120 @@ import {
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import MainHeader from "./MainHeader";
+import { useDispatch, useSelector } from "react-redux";
+import {
+	fetchProjects,
+	deleteProject,
+	updateProject,
+} from "../store/projectsSlice";
+import { fetchAllReports } from "../store/reportsSlice";
 
 const EditProject = () => {
 	const navigate = useNavigate();
 	const { projectId } = useParams();
+	const dispatch = useDispatch();
+	const projects = useSelector((state) => state.projects.projects);
 	const [project, setProject] = useState(null);
+	const reports = useSelector((state) => state.reports.reports);
+	const [currentReport, setCurrentReport] = useState(null);
+	const [closedDate, setClosedDate] = useState("");
 	const [isEditing, setIsEditing] = useState(false);
 
 	useEffect(() => {
-		const projects = JSON.parse(localStorage.getItem("projects")) || [];
-		const projectToEdit = projects.find((p) => p.id.toString() === projectId);
-		if (projectToEdit) {
-			setProject(projectToEdit);
+		if (!projectId) {
+			console.error("projectId is missing");
+			navigate("/home/projects");
+			return;
 		}
-	}, [projectId]);
 
+		if (projects.length === 0) {
+			dispatch(fetchProjects());
+		} else {
+			const projectToEdit = projects.find(
+				(p) => p.id === parseInt(projectId, 10)
+			);
+			if (projectToEdit) {
+				const today = new Date().toISOString().split("T")[0];
+				setClosedDate(today);
+				setProject(projectToEdit);
+				console.log(projectToEdit);
+			} else {
+				navigate("/home/projects");
+			}
+		}
+
+		dispatch(fetchAllReports());
+	}, [projects, projectId, dispatch, navigate]);
+
+	// После загрузки проекта и отчетов ищем актуальный отчет
+	useEffect(() => {
+		if (reports.length > 0 && project) {
+			const report = reports.find(
+				(report) => report.projectid === parseInt(projectId, 10)
+			);
+			setCurrentReport(report || null);
+		}
+	}, [reports, project, projectId]);
+
+	// Функция для форматирования даты
+	const formatDate = (date) => {
+		if (!date) return "";
+		const formattedDate = new Date(date);
+		return formattedDate instanceof Date && !isNaN(formattedDate)
+			? formattedDate.toISOString().split("T")[0]
+			: "";
+	};
+
+	// Функция сохранения изменений
 	const handleSave = () => {
-		const projects = JSON.parse(localStorage.getItem("projects")) || [];
-		const updatedProjects = projects.map((p) =>
-			p.id.toString() === projectId ? project : p
-		);
-		localStorage.setItem("projects", JSON.stringify(updatedProjects));
-		setIsEditing(false);
-	};
-
-	const handleCancel = () => {
-		const projects = JSON.parse(localStorage.getItem("projects")) || [];
-		const originalProject = projects.find((p) => p.id.toString() === projectId);
-		setProject(originalProject);
-		setIsEditing(false);
-	};
-
-	const handleDelete = () => {
-		const projects = JSON.parse(localStorage.getItem("projects")) || [];
-		const updatedProjects = projects.filter(
-			(p) => p.id.toString() !== projectId
-		);
-		localStorage.setItem("projects", JSON.stringify(updatedProjects));
-		navigate("/home/projects");
-	};
-
-	const handleOpenReport = () => {
-		const reportId =
-			project.reports && project.reports.length > 0
-				? project.reports[project.reports.length - 1].reportId
-				: null;
-		if (reportId) {
-			navigate(`/home/projects/${projectId}/report/${reportId}`);
+		const token = localStorage.getItem("token");
+		if (!token) {
+			navigate("/login");
+		} else {
+			if (
+				!project.projectname ||
+				!project.clientname ||
+				!project.projectdescription
+			) {
+				alert("Please fill in all required fields.");
+				return;
+			}
+			const updatedProject = {
+				...project,
+				cost: project.cost || 0,
+				reportid: project.reportid,
+			};
+			console.log("Updated project:", updatedProject);
+			dispatch(updateProject(updatedProject, projectId));
+			setIsEditing(false);
+			navigate("/home/projects");
 		}
 	};
 
+	// Функция отмены редактирования
+	const handleCancel = () => {
+		setIsEditing(false);
+		const projectToEdit = projects.find((p) => p.id.toString() === projectId);
+		setProject(projectToEdit);
+	};
+
+	// Функция удаления проекта
+	const handleDelete = () => {
+		if (window.confirm("Are you sure you want to delete this project?")) {
+			dispatch(deleteProject(projectId));
+			navigate("/home/projects");
+		}
+	};
+
+	// Функция открытия последнего отчета
+	const handleOpenReport = () => {
+		console.log(reports, currentReport, project);
+		if (currentReport) {
+			navigate(`/home/projects/${projectId}/report/${currentReport.id}`);
+		}
+	};
+
+	// Если проект еще не загружен
 	if (!project) return <Typography>Loading...</Typography>;
 
 	return (
@@ -82,7 +146,7 @@ const EditProject = () => {
 						Projects
 					</Link>
 					<Typography sx={{ color: "text.primary" }}>
-						{project.projectName}
+						{project.projectname}
 					</Typography>
 				</Breadcrumbs>
 				<Typography
@@ -94,7 +158,6 @@ const EditProject = () => {
 			</Box>
 
 			{isEditing ? (
-				// Режим редактирования
 				<Box
 					sx={{
 						display: "flex",
@@ -104,63 +167,62 @@ const EditProject = () => {
 						width: "50vw",
 					}}>
 					<TextField
+						name="projectname"
 						label="Project Name"
 						variant="outlined"
 						sx={{ width: "400px" }}
-						value={project.projectName}
+						value={project.projectname}
 						onChange={(e) =>
-							setProject({ ...project, projectName: e.target.value })
+							setProject({ ...project, projectname: e.target.value })
 						}
 					/>
 					<TextField
+						name="clientname"
 						label="Client Name"
 						variant="outlined"
 						sx={{ width: "400px" }}
-						value={project.clientName}
+						value={project.clientname}
 						onChange={(e) =>
-							setProject({ ...project, clientName: e.target.value })
+							setProject({ ...project, clientname: e.target.value })
 						}
 					/>
 					<TextField
+						name="projectdescription"
 						label="Project Description"
 						variant="outlined"
 						sx={{ width: "400px" }}
-						value={project.projectDescription}
+						value={project.projectdescription}
 						onChange={(e) =>
-							setProject({ ...project, projectDescription: e.target.value })
+							setProject({ ...project, projectdescription: e.target.value })
 						}
 					/>
-
 					<InputLabel id="select-label">Status</InputLabel>
 					<Select
+						name="projectstatus"
 						labelId="select-label"
 						sx={{ width: "400px" }}
-						value={project.projectStatus}
+						value={project.projectstatus}
 						label="Status"
 						onChange={(e) =>
-							setProject({ ...project, projectStatus: e.target.value })
+							setProject({ ...project, projectstatus: e.target.value })
 						}
 						required>
 						<MenuItem value="active">Active</MenuItem>
 						<MenuItem value="inactive">Inactive</MenuItem>
 					</Select>
 					<TextField
+						name="closeddate"
 						label="Closed Date"
 						variant="outlined"
 						sx={{ width: "400px" }}
 						type="date"
-						value={project.closedDate}
+						value={formatDate(project.closeddate) || formatDate(closedDate)}
 						onChange={(e) =>
-							setProject({ ...project, closedDate: e.target.value })
+							setProject({ ...project, closeddate: e.target.value })
 						}
 						InputLabelProps={{ shrink: true }}
 					/>
-					<Box
-						sx={{
-							marginTop: "20px",
-							display: "flex",
-							gap: "20px",
-						}}>
+					<Box sx={{ marginTop: "20px", display: "flex", gap: "20px" }}>
 						<Button
 							variant="contained"
 							color="primary"
@@ -176,60 +238,58 @@ const EditProject = () => {
 					</Box>
 				</Box>
 			) : (
-				// Режим просмотра
 				<Box sx={{ padding: "0 32px" }}>
 					<Typography variant="body1">
-						<strong>Project Name:</strong> {project.projectName}
+						<strong>Project Name:</strong> {project.projectname}
 					</Typography>
 					<Typography variant="body1">
-						<strong>Client Name:</strong> {project.clientName}
+						<strong>Client Name:</strong> {project.clientname}
 					</Typography>
 					<Typography variant="body1">
-						<strong>Description:</strong> {project.projectDescription}
+						<strong>Description:</strong> {project.projectdescription}
 					</Typography>
 					<Typography variant="body1">
-						<strong>Status:</strong> {project.projectStatus}
+						<strong>Status:</strong> {project.projectstatus}
 					</Typography>
-					{project.cost && (
-						<Typography
-							variant="body1"
-							sx={{ marginTop: "20px" }}>
-							<strong>Total Cost:</strong> ${project.cost}
-						</Typography>
-					)}
-					{project.reports && project.reports.length > 0 && (
-						<Box sx={{ marginTop: "20px" }}>
-							<Button
-								variant="contained"
-								color="primary"
-								onClick={handleOpenReport}>
-								Open Latest Report
-							</Button>
+					<Typography variant="body1">
+						<strong>Total Cost: </strong>
+						{(currentReport && currentReport.totalcost) || project.cost} $
+					</Typography>
+					{currentReport && currentReport.id && (
+						<Box sx={{ marginTop: "8px" }}>
+							{
+								<Box sx={{ marginTop: "8px", marginBottom: "8px" }}>
+									<Button
+										variant="contained"
+										size="small"
+										onClick={handleOpenReport}>
+										View Latest Report
+									</Button>
+								</Box>
+							}
 						</Box>
 					)}
 					<Typography variant="body1">
-						<strong>Created Date:</strong> {project.createdDate}
+						<strong>Created Date:</strong>{" "}
+						{formatDate(project.createddate) || "N/A"}
 					</Typography>
 					<Typography variant="body1">
-						<strong>Closed Date:</strong> {project.closedDate}
+						<strong>Closed Date:</strong>{" "}
+						{formatDate(project.closeddate) || "N/A"}
 					</Typography>
-					<Box
-						sx={{
-							marginTop: "20px",
-							display: "flex",
-							gap: "20px",
-						}}>
+
+					<Box sx={{ marginTop: "20px", display: "flex", gap: "20px" }}>
 						<Button
 							variant="contained"
 							color="primary"
 							onClick={() => setIsEditing(true)}>
-							Edit
+							Edit Project
 						</Button>
 						<Button
 							variant="outlined"
-							color="error"
+							color="secondary"
 							onClick={handleDelete}>
-							Delete
+							Delete Project
 						</Button>
 					</Box>
 				</Box>

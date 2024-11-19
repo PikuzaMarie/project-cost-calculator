@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	Dialog,
 	DialogActions,
@@ -6,28 +6,38 @@ import {
 	DialogTitle,
 	TextField,
 	Button,
-	Select,
-	MenuItem,
-	InputLabel,
+	Typography,
 } from "@mui/material";
 
 const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 	const [projectName, setProjectName] = useState("");
 	const [clientName, setClientName] = useState("");
 	const [projectDescription, setProjectDescription] = useState("");
-	const [projectStatus, setProjectStatus] = useState("");
 	const [createdDate, setCreatedDate] = useState("");
-	const [closedDate, setClosedDate] = useState("");
+	const [error, setError] = useState("");
+
+	useEffect(() => {
+		if (open) {
+			const today = new Date().toISOString().split("T")[0];
+			setCreatedDate(today);
+		}
+	}, [open]);
 
 	const handleSubmit = () => {
+		if (!projectName || !clientName || !projectDescription || !createdDate) {
+			setError("All fields are required.");
+			return;
+		}
+		setError("");
+
 		const newProject = {
-			projectName,
-			clientName,
-			projectDescription,
-			projectStatus,
-			createdDate,
-			closedDate,
-			reports: [],
+			projectname: projectName,
+			clientname: clientName,
+			projectdescription: projectDescription,
+			projectstatus: "active",
+			createddate: createdDate,
+			cost: 0,
+			reportid: null,
 		};
 		onSubmit(newProject);
 	};
@@ -38,7 +48,16 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 			onClose={onClose}>
 			<DialogTitle>Create a new project</DialogTitle>
 			<DialogContent>
+				{error && (
+					<Typography
+						variant="body2"
+						color="error"
+						sx={{ marginBottom: "16px" }}>
+						{error}
+					</Typography>
+				)}
 				<TextField
+					name="projectname"
 					autoFocus
 					margin="dense"
 					label="Project Name"
@@ -48,6 +67,7 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 					required
 				/>
 				<TextField
+					name="clientname"
 					margin="dense"
 					label="Client Name"
 					fullWidth
@@ -56,25 +76,17 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 					required
 				/>
 				<TextField
+					name="projectdescription"
 					margin="dense"
 					label="Project Description"
 					fullWidth
 					multiline
 					value={projectDescription}
 					onChange={(e) => setProjectDescription(e.target.value)}
+					required
 				/>
-				<InputLabel id="select-label">Status</InputLabel>
-				<Select
-					labelId="select-label"
-					fullWidth
-					value={projectStatus}
-					label="Status"
-					onChange={(e) => setProjectStatus(e.target.value)}
-					required>
-					<MenuItem value="active">Active</MenuItem>
-					<MenuItem value="inactive">Inactive</MenuItem>
-				</Select>
 				<TextField
+					name="createddate"
 					margin="dense"
 					label="Created Date"
 					fullWidth
@@ -82,15 +94,7 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 					value={createdDate}
 					onChange={(e) => setCreatedDate(e.target.value)}
 					InputLabelProps={{ shrink: true }}
-				/>
-				<TextField
-					margin="dense"
-					label="Closed Date"
-					fullWidth
-					type="date"
-					value={closedDate}
-					onChange={(e) => setClosedDate(e.target.value)}
-					InputLabelProps={{ shrink: true }}
+					required
 				/>
 			</DialogContent>
 			<DialogActions>

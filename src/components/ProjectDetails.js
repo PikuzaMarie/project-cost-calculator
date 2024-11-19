@@ -13,7 +13,7 @@ const ProjectDetails = ({
 	const navigate = useNavigate();
 
 	const handleCreateReport = () => {
-		navigate(`/newreport/${projectId}`);
+		navigate(`/home/projects/${projectId}/report`);
 	};
 
 	return (
