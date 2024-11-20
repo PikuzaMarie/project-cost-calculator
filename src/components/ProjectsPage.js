@@ -28,6 +28,8 @@ const ProjectsPage = () => {
 	const [open, setOpen] = useState(false);
 	const projectsPerPage = 2;
 
+	const [searchQuery, setSearchQuery] = useState("");
+
 	const qParams = new URLSearchParams(location.search);
 	const pageFromURL = parseInt(qParams.get("page") || 1);
 	const [page, setPage] = useState(pageFromURL);
@@ -53,9 +55,17 @@ const ProjectsPage = () => {
 		setPage(value);
 	};
 
+	const filteredProjects = projects.filter((project) =>
+		project.clientname.toLowerCase().includes(searchQuery.toLowerCase())
+	);
+
+	const handleSearch = (query) => {
+		setSearchQuery(query); // Обновляем состояние поиска
+	};
+
 	const indexOfLastProject = page * projectsPerPage;
 	const indexOfFirstProject = indexOfLastProject - projectsPerPage;
-	const currentProjects = projects.slice(
+	const currentProjects = filteredProjects.slice(
 		indexOfFirstProject,
 		indexOfLastProject
 	);
@@ -79,7 +89,7 @@ const ProjectsPage = () => {
 
 	return (
 		<Box>
-			<MainHeader />
+			<MainHeader onSearch={handleSearch} />
 			<Box
 				sx={{
 					display: "flex",
@@ -100,7 +110,7 @@ const ProjectsPage = () => {
 					<Typography
 						variant="h6"
 						gutterBottom>
-						Total Projects: {projects.length}
+						Total Projects: {filteredProjects.length}
 					</Typography>
 					<Button
 						variant="contained"
@@ -150,7 +160,7 @@ const ProjectsPage = () => {
 				<Box
 					sx={{ marginTop: "20px", display: "flex", justifyContent: "center" }}>
 					<Pagination
-						count={Math.ceil(projects.length / projectsPerPage)}
+						count={Math.ceil(filteredProjects.length / projectsPerPage)}
 						page={page}
 						onChange={handleChangePage}
 						color="primary"
