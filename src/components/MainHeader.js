@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../store/employeeSlice";
 import { Box, Avatar, Menu, MenuItem, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonIcon from "@mui/icons-material/Person";
@@ -6,6 +9,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
 const MainHeader = () => {
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
+
 	const [anchorEl, setAnchorEl] = useState(null);
 
 	const handleAvatarClick = (event) => {
@@ -17,8 +23,10 @@ const MainHeader = () => {
 	};
 
 	const handleLogout = () => {
+		dispatch(logout());
 		console.log("Logged out");
 		setAnchorEl(null);
+		navigate("/");
 	};
 
 	return (

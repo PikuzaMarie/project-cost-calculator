@@ -53,10 +53,22 @@ export const updateEmployee = createAsyncThunk(
 		}
 	}
 );
+
+export const logoutEmployee = () => {
+	localStorage.removeItem("token");
+	return { type: "employee/logout" };
+};
+
 const employeeSlice = createSlice({
 	name: "employee",
 	initialState,
-	reducers: {},
+	reducers: {
+		logout: (state) => {
+			state.data = null;
+			state.status = "idle";
+			state.error = null;
+		},
+	},
 	extraReducers: (builder) => {
 		builder
 			// Fetch employee
@@ -87,5 +99,7 @@ const employeeSlice = createSlice({
 			});
 	},
 });
+
+export const { logout } = employeeSlice.actions;
 
 export default employeeSlice.reducer;
