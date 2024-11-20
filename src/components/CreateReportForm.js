@@ -6,72 +6,143 @@ import {
 } from "../store/reportsSlice";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
+import TeamForm from "./TeamForm";
 
 const CreateReportForm = () => {
 	const { projectId } = useParams();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	// Отчеты из хранилища
+	//Get reports from store
 	const reports = useSelector((state) => state.reports.reports || []);
-	const report = reports.find((r) => r.projectId === projectId);
+	const report = reports.find((r) => r.projectid === parseInt(projectId, 10));
 
-	const employeeid = useSelector((state) => state.employee.data?.id);
-
-	// Локальные состояния для формы
 	const [reportName, setReportName] = useState("");
-	const [totalCost, setTotalCost] = useState("");
+	const [budget, setBudget] = useState(0);
+	const [projectManager, setProjectManager] = useState({
+		hourlyRate: "",
+		hoursWorked: "",
+	});
+	const [developerTeam, setDeveloperTeam] = useState([
+		{ developers: "", hourlyRate: "", hoursWorked: "" },
+	]);
+	const [analystTeam, setAnalystTeam] = useState([
+		{ analysts: "", hourlyRate: "", hoursWorked: "" },
+	]);
+	const [designTeam, setDesignTeam] = useState([
+		{ designers: "", hourlyRate: "", hoursWorked: "" },
+	]);
+	const [testTeam, setTestTeam] = useState([
+		{ testers: "", hourlyRate: "", hoursWorked: "" },
+	]);
+	const [equipmentDepreciation, setEquipmentDepreciation] = useState("");
+	const [serviceSubscriptions, setServiceSubscriptions] = useState("");
+	const [customFields, setCustomFields] = useState([
+		{ description: "", amount: "" },
+	]);
+	const [totalCost, setTotalCost] = useState(0);
 	const [error, setError] = useState("");
 
-	// Загружаем отчет при монтировании компонента
+	// Load info when component is mounted
 	useEffect(() => {
 		if (projectId && !report) {
 			dispatch(fetchReportByProjectId(projectId));
 		}
 	}, [dispatch, projectId, report]);
 
-	// Заполняем поля формы, если отчет уже загружен
+	// Fill in fields if report already exists
 	useEffect(() => {
 		if (report) {
 			setReportName(report.reportname || "");
-			setTotalCost(report.totalcost ? report.totalcost.toString() : "");
+			setBudget(report.budget ? report.budget.toString() : "");
+			setTotalCost(report.totalcost || 0);
 		} else {
 			setReportName("");
-			setTotalCost("");
+			setBudget("");
+			setTotalCost(0);
 		}
 	}, [report]);
+
+	// Calculate total cost
+	const calculateTotalCost = () => {
+		let projectManagerCost =
+			projectManager.hoursWorked * projectManager.hourlyRate;
+		let analystCost = analystTeam.reduce((acc, analyst) => {
+			const analysts = parseInt(analyst.analysts) || 0;
+			const hourlyRate = parseInt(analyst.hourlyRate) || 0;
+			const hoursWorked = parseInt(analyst.hoursWorked) || 0;
+			return acc + analysts * hourlyRate * hoursWorked;
+		}, 0);
+
+		let developerCost = developerTeam.reduce((acc, dev) => {
+			const developers = parseInt(dev.developers) || 0;
+			const hourlyRate = parseInt(dev.hourlyRate) || 0;
+			const hoursWorked = parseInt(dev.hoursWorked) || 0;
+			return acc + developers * hourlyRate * hoursWorked;
+		}, 0);
+
+		let designCost = designTeam.reduce((acc, designer) => {
+			const designers = parseInt(designer.designers) || 0;
+			const hourlyRate = parseInt(designer.hourlyRate) || 0;
+			const hoursWorked = parseInt(designer.hoursWorked) || 0;
+			return acc + designers * hourlyRate * hoursWorked;
+		}, 0);
+
+		let testCost = testTeam.reduce((acc, tester) => {
+			const testers = parseInt(tester.testers) || 0;
+			const hourlyRate = parseInt(tester.hourlyRate) || 0;
+			const hoursWorked = parseInt(tester.hoursWorked) || 0;
+			return acc + testers * hourlyRate * hoursWorked;
+		}, 0);
+
+		let equipmentDepreciationAmount = parseInt(equipmentDepreciation) || 0;
+		let serviceSubscriptionsAmount = parseInt(serviceSubscriptions) || 0;
+
+		let customFieldsAmount = customFields.reduce((acc, field) => {
+			const amount = parseInt(field.amount) || 0;
+			return acc + amount;
+		}, 0);
+
+		setTotalCost(
+			projectManagerCost +
+				analystCost +
+				designCost +
+				developerCost +
+				testCost +
+				equipmentDepreciationAmount +
+				serviceSubscriptionsAmount +
+				customFieldsAmount
+		);
+	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
-		if (!reportName || !totalCost) {
-			setError("All fields are required!");
+		if (!reportName || !budget) {
+			setError("Report name and budget are required");
 			return;
 		}
 
-		// Проверка на правильность totalCost
-		if (isNaN(parseFloat(totalCost))) {
-			setError("Total Cost must be a valid number");
+		// Validate total cost
+		if (isNaN(totalCost) || totalCost <= 0) {
+			setError("Total Cost must be a valid number greater than zero.");
 			return;
 		}
 
-		if (!employeeid) {
-			setError("Employee ID is missing. Please log in again.");
-			return;
-		}
+		const reportdate = new Date().toISOString().split("T")[0];
 
-		// Создаем объект report с необходимыми данными
 		const reportData = {
 			reportname: reportName,
-			totalcost: parseFloat(totalCost),
-			reportauthor: employeeid,
+			totalcost: totalCost,
+			reportcreateddate: reportdate,
+			budget: parseInt(budget),
 		};
 
 		try {
-			// Передаем объект report в createOrUpdateReport
-			await dispatch(createOrUpdateReport({ projectId, report: reportData }));
+			console.log("Dispatching report:", reportData);
+			dispatch(createOrUpdateReport({ projectId, report: reportData }));
+			console.log("Redux state after save:", reports);
 
-			// Перенаправление на страницу проекта после успешного создания/обновления отчета
 			navigate(`/home/projects/${projectId}`);
 		} catch (err) {
 			setError("An error occurred while saving the report.");
@@ -105,14 +176,154 @@ const CreateReportForm = () => {
 				required
 			/>
 			<TextField
-				label="Total Cost"
+				label="Budget"
 				fullWidth
 				margin="normal"
 				type="number"
-				value={totalCost}
-				onChange={(e) => setTotalCost(e.target.value)}
+				value={budget.toString()}
+				onChange={(e) => {
+					setBudget(e.target.value);
+					calculateTotalCost();
+				}}
 				required
 			/>
+			<Box sx={{ marginBottom: "20px" }}>
+				<Typography
+					variant="h6"
+					sx={{ marginTop: "20px" }}>
+					Project Manager
+				</Typography>
+				<Box
+					sx={{
+						display: "flex",
+						gap: "10px",
+						marginBottom: "10px",
+						paddingTop: "0px",
+					}}>
+					<TextField
+						label="Hourly Rate"
+						fullWidth
+						type="number"
+						value={projectManager.hourlyRate}
+						onChange={(e) => {
+							setProjectManager({
+								...projectManager,
+								hourlyRate: e.target.value,
+							});
+							calculateTotalCost();
+						}}
+						required
+					/>
+					<TextField
+						label="Hours Worked"
+						fullWidth
+						type="number"
+						value={projectManager.hoursWorked}
+						onChange={(e) => {
+							setProjectManager({
+								...projectManager,
+								hoursWorked: e.target.value,
+							});
+							calculateTotalCost();
+						}}
+						required
+					/>
+				</Box>
+			</Box>
+
+			<TeamForm
+				team={developerTeam}
+				setTeam={setDeveloperTeam}
+				calculateTotalCost={calculateTotalCost}
+				teamType="developers"
+			/>
+			<TeamForm
+				team={analystTeam}
+				setTeam={setAnalystTeam}
+				calculateTotalCost={calculateTotalCost}
+				teamType="analysts"
+			/>
+			<TeamForm
+				team={designTeam}
+				setTeam={setDesignTeam}
+				calculateTotalCost={calculateTotalCost}
+				teamType="designers"
+			/>
+			<TeamForm
+				team={testTeam}
+				setTeam={setTestTeam}
+				calculateTotalCost={calculateTotalCost}
+				teamType="testers"
+			/>
+			<TextField
+				label="Equipment Depreciation"
+				fullWidth
+				margin="normal"
+				type="number"
+				value={equipmentDepreciation.toString()}
+				onChange={(e) => {
+					setEquipmentDepreciation(e.target.value);
+					calculateTotalCost();
+				}}
+				required
+			/>
+			<TextField
+				label="Service Subscriptions"
+				fullWidth
+				margin="normal"
+				type="number"
+				value={serviceSubscriptions.toString()}
+				onChange={(e) => {
+					setServiceSubscriptions(e.target.value);
+					calculateTotalCost();
+				}}
+				required
+			/>
+			{customFields.map((field, index) => (
+				<Box
+					key={index}
+					sx={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+					<TextField
+						label="Description"
+						value={field.description}
+						onChange={(e) => {
+							const newFields = [...customFields];
+							newFields[index].description = e.target.value;
+							setCustomFields(newFields);
+						}}
+					/>
+					<TextField
+						label="Amount"
+						value={field.amount.toString()}
+						onChange={(e) => {
+							const newFields = [...customFields];
+							newFields[index].amount = e.target.value;
+							setCustomFields(newFields);
+							calculateTotalCost();
+						}}
+						type="number"
+					/>
+				</Box>
+			))}
+			<Button
+				variant="outlined"
+				onClick={() => {
+					setCustomFields([...customFields, { description: "", amount: "" }]);
+				}}>
+				Add Custom Field
+			</Button>
+			{report && report.totalcost && (
+				<Typography
+					variant="h6"
+					sx={{ marginTop: "20px" }}>
+					Previous Cost: {report.totalcost}
+				</Typography>
+			)}
+			<Typography
+				variant="h6"
+				sx={{ marginTop: "20px" }}>
+				Total Cost: {totalCost}
+			</Typography>
 			<Button
 				type="submit"
 				variant="contained"
