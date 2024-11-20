@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
 const initialState = {
 	projects: [],
@@ -16,6 +17,10 @@ const sortProjectsByName = (projects) => {
 			return 0;
 		}
 	});
+};
+
+const findProjectIndex = (projects, projectId) => {
+	return projects.findIndex((project) => project.id === projectId);
 };
 
 const projectsSlice = createSlice({
@@ -44,9 +49,7 @@ const projectsSlice = createSlice({
 		},
 		updateProjectSuccess: (state, action) => {
 			const updatedProject = action.payload;
-			const index = state.projects.findIndex(
-				(project) => project.id === updatedProject.id
-			);
+			const index = findProjectIndex(state.projects, updatedProject.id);
 			if (index !== -1) {
 				state.projects[index] = updatedProject;
 			}
@@ -65,20 +68,14 @@ export const fetchProjects = (token) => {
 		dispatch(clearError());
 		dispatch(getProjectsStart());
 		try {
-			const response = await fetch("http://localhost:5000/api/projects", {
-				method: "GET",
+			const response = await axios.get("http://localhost:5000/api/projects", {
 				headers: {
 					"Content-Type": "application/json",
 					Authorization: `Bearer ${token}`,
 				},
 			});
 
-			if (!response.ok) {
-				throw new Error("Failed to fetch projects");
-			}
-
-			const data = await response.json();
-			dispatch(getProjectsSuccess(data));
+			dispatch(getProjectsSuccess(response.data));
 		} catch (error) {
 			dispatch(getProjectsFailure(error.message));
 		}
@@ -88,6 +85,7 @@ export const fetchProjects = (token) => {
 export const addProject = (project) => {
 	return async (dispatch) => {
 		dispatch(clearError());
+
 		const token = localStorage.getItem("token");
 
 		if (!token) {
@@ -96,21 +94,18 @@ export const addProject = (project) => {
 		}
 
 		try {
-			const response = await fetch("http://localhost:5000/api/projects", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-				body: JSON.stringify(project),
-			});
+			const response = await axios.post(
+				"http://localhost:5000/api/projects",
+				project,
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
 
-			if (!response.ok) {
-				throw new Error("Failed to add project");
-			}
-
-			const newProject = await response.json();
-			dispatch(addProjectSuccess(newProject));
+			dispatch(addProjectSuccess(response.data));
 		} catch (error) {
 			dispatch(getProjectsFailure("Failed to add project. Please try again."));
 		}
@@ -128,19 +123,11 @@ export const deleteProject = (projectId) => {
 		}
 
 		try {
-			const response = await fetch(
-				`http://localhost:5000/api/projects/${projectId}`,
-				{
-					method: "DELETE",
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
-
-			if (!response.ok) {
-				throw new Error("Failed to delete project");
-			}
+			await axios.delete(`http://localhost:5000/api/projects/${projectId}`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			dispatch(deleteProjectSuccess(projectId));
 		} catch (error) {
@@ -166,27 +153,20 @@ export const updateProject = (project, projectId) => async (dispatch) => {
 	}
 
 	try {
-		const response = await fetch(
+		const response = await axios.put(
 			`http://localhost:5000/api/projects/${projectId}`,
+			project,
 			{
-				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
 					Authorization: `Bearer ${token}`,
 				},
-				body: JSON.stringify(project),
 			}
 		);
 
-		if (!response.ok) {
-			const errorMessage = await response.text();
-			throw new Error(`Failed to update project: ${errorMessage}`);
-		}
-
-		const updatedProject = await response.json();
-		dispatch(updateProjectSuccess(updatedProject));
+		dispatch(updateProjectSuccess(response.data));
 	} catch (error) {
-		dispatch(getProjectsFailure(`Failed to update project: ${error.message}`)); // Выводим подробности ошибки
+		dispatch(getProjectsFailure(`Failed to update project: ${error.message}`));
 	}
 };
 
