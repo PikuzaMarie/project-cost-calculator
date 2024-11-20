@@ -10,7 +10,7 @@ import {
 	Breadcrumbs,
 	Link,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import CreateProjectForm from "./CreateProjectForm";
 import ProjectDetails from "./ProjectDetails";
 import MainHeader from "./MainHeader";
@@ -22,11 +22,15 @@ import {
 
 const ProjectsPage = () => {
 	const navigate = useNavigate();
+	const location = useLocation();
 	const dispatch = useDispatch();
 	const { projects, error } = useSelector((state) => state.projects);
 	const [open, setOpen] = useState(false);
-	const [page, setPage] = useState(1);
 	const projectsPerPage = 2;
+
+	const qParams = new URLSearchParams(location.search);
+	const pageFromURL = parseInt(qParams.get("page") || 1);
+	const [page, setPage] = useState(pageFromURL);
 
 	useEffect(() => {
 		const token = localStorage.getItem("token");
@@ -38,7 +42,14 @@ const ProjectsPage = () => {
 		}
 	}, [dispatch, navigate]);
 
-	const handleChangePage = (event, value) => {
+	useEffect(() => {
+		navigate({
+			pathname: location.pathname,
+			search: `?page=${page}`,
+		});
+	}, [page, navigate, location.pathname]);
+
+	const handleChangePage = (state, value) => {
 		setPage(value);
 	};
 
@@ -104,7 +115,7 @@ const ProjectsPage = () => {
 					<Typography
 						variant="body2"
 						sx={{ color: "error.main", textAlign: "center" }}>
-						{error}
+						{error.message}
 					</Typography>
 				)}
 
@@ -121,7 +132,6 @@ const ProjectsPage = () => {
 										projectDescription={project.projectdescription}
 										projectStatus={project.projectstatus}
 										createdDate={project.createddate}
-										reports={project.reports}
 										onEditProject={() => handleEditProject(project.id)}
 										onDeleteProject={() => handleDeleteProject(project.id)}
 									/>

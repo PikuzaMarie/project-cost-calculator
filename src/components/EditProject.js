@@ -9,7 +9,9 @@ import {
 	InputLabel,
 	Select,
 	MenuItem,
+	IconButton,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate, useParams } from "react-router-dom";
 import MainHeader from "./MainHeader";
 import { useDispatch, useSelector } from "react-redux";
@@ -149,14 +151,21 @@ const EditProject = () => {
 						{project.projectname}
 					</Typography>
 				</Breadcrumbs>
-				<Typography
-					variant="h5"
-					component="h3"
-					sx={{ marginTop: "20px" }}>
-					{isEditing ? "Edit Project" : "View Project"}
-				</Typography>
+				<Box sx={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+					<IconButton
+						onClick={() => navigate(-1)}
+						edge="start"
+						color="primary"
+						aria-label="back">
+						<ArrowBackIcon />
+					</IconButton>
+					<Typography
+						variant="h5"
+						component="h3">
+						{isEditing ? "Edit Project" : "View Project"}
+					</Typography>
+				</Box>
 			</Box>
-
 			{isEditing ? (
 				<Box
 					sx={{
