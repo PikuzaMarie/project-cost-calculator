@@ -6,6 +6,18 @@ const initialState = {
 	error: null,
 };
 
+const sortProjectsByName = (projects) => {
+	return [...projects].sort((a, b) => {
+		if (a.projectname.toLowerCase() < b.projectname.toLowerCase()) {
+			return -1;
+		} else if (a.projectname.toLowerCase() > b.projectname.toLowerCase()) {
+			return 1;
+		} else {
+			return 0;
+		}
+	});
+};
+
 const projectsSlice = createSlice({
 	name: "projects",
 	initialState,
@@ -15,7 +27,7 @@ const projectsSlice = createSlice({
 		},
 		getProjectsSuccess: (state, action) => {
 			state.status = "succeeded";
-			state.projects = action.payload;
+			state.projects = sortProjectsByName(action.payload);
 		},
 		getProjectsFailure: (state, action) => {
 			state.status = "failed";
@@ -23,6 +35,7 @@ const projectsSlice = createSlice({
 		},
 		addProjectSuccess: (state, action) => {
 			state.projects.unshift(action.payload);
+			state.projects = sortProjectsByName(state.projects);
 		},
 		deleteProjectSuccess: (state, action) => {
 			state.projects = state.projects.filter(
