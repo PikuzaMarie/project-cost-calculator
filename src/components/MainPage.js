@@ -4,13 +4,14 @@ import MainHeader from "./MainHeader";
 import { Box, Button, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchEmployee } from "../store/employeeSlice";
+import { useTheme } from "@mui/material/styles";
 
 const HomePage = () => {
+	const theme = useTheme();
 	const [user, setUser] = useState(null);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const employee = useSelector((state) => state.employee.data);
-	const employeeStatus = useSelector((state) => state.employee.status);
+	const { employee, status, error } = useSelector((state) => state.employee);
 
 	useEffect(() => {
 		const token = localStorage.getItem("token");
@@ -27,33 +28,60 @@ const HomePage = () => {
 		navigate("/home/projects");
 	};
 
-	if (employeeStatus === "loading") {
-		return <Typography>Loading...</Typography>;
-	}
-
 	return (
 		<Box>
 			<MainHeader />
+			{status === "loading" && <Typography>Loading...</Typography>}
+			{error && <Typography>Oops... {error}</Typography>}
 			<Box
 				sx={{
 					display: "flex",
 					flexDirection: "column",
 					justifyContent: "center",
 					alignItems: "center",
-					marginTop: "60px",
+					marginTop: "120px",
 					gap: "20px",
 				}}>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
+						gap: "5px",
+					}}>
+					<Typography
+						variant="h4"
+						component="h2"
+						fontWeight="600">
+						{employee && employee.name
+							? `Welcome, dear ${employee.name}!`
+							: "Welcome, dear employee!"}
+					</Typography>
+					<Typography
+						variant="h6"
+						component="p">
+						{employee && employee.position && employee.department
+							? `Your position is ${employee.position} in ${employee.department}`
+							: "Couldn't load information about you "}
+					</Typography>
+				</Box>
 				<Typography
-					variant="h4"
-					component="h2">
-					{employee && employee.name
-						? `Welcome, dear ${employee.name}!`
-						: "Welcome, dear employee!"}
+					variant="body1"
+					component="p"
+					sx={{
+						color: theme.palette.custom.gray,
+					}}>
+					You can either manage your profile information or go straight to
+					projects and do your magic!
 				</Typography>
 				<Button
 					variant="contained"
 					onClick={handleClick}
-					sx={{ width: "fit-content" }}>
+					sx={{
+						marginLeft: "auto",
+						marginRight: "auto",
+					}}>
 					Go to Projects
 				</Button>
 			</Box>
