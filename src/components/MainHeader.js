@@ -10,12 +10,14 @@ import {
 	IconButton,
 	TextField,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import CalculateIcon from "@mui/icons-material/Calculate";
 import PersonIcon from "@mui/icons-material/Person";
 import SearchIcon from "@mui/icons-material/Search";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import { useTheme } from "@mui/material/styles";
 
 const MainHeader = ({ onSearch }) => {
+	const theme = useTheme();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
@@ -57,11 +59,12 @@ const MainHeader = ({ onSearch }) => {
 				width: "100vw",
 				height: "68px",
 				padding: "0 32px 0",
-				backgroundColor: "#01579b",
+				backgroundColor: theme.palette.primary.dark,
+				boxShadow: 3,
 			}}>
-			<MenuIcon
+			<CalculateIcon
 				size="large"
-				sx={{ width: 32, height: 32, color: "white" }}
+				sx={{ color: theme.palette.white.main }}
 			/>
 			<Box sx={{ display: "flex", gap: "8px", alignItems: "center" }}>
 				{showSearchInput && (
@@ -71,7 +74,7 @@ const MainHeader = ({ onSearch }) => {
 						value={searchInputValue}
 						onChange={handleSearchChange}
 						sx={{
-							backgroundColor: "white",
+							backgroundColor: theme.palette.white.main,
 							borderRadius: "4px",
 							width: "200px",
 						}}
@@ -80,12 +83,12 @@ const MainHeader = ({ onSearch }) => {
 				)}
 
 				<IconButton onClick={handleSearchClick}>
-					<SearchIcon sx={{ width: 32, height: 32, color: "#ffffff" }} />
+					<SearchIcon sx={{ color: theme.palette.white.main }} />
 				</IconButton>
 
 				<IconButton onClick={handleAvatarClick}>
-					<Avatar sx={{ width: 32, height: 32, bgcolor: "#ffffff" }}>
-						<PersonIcon sx={{ color: "#01579b" }} />
+					<Avatar sx={{ bgcolor: theme.palette.white.main }}>
+						<PersonIcon sx={{ color: theme.palette.primary.dark }} />
 					</Avatar>
 				</IconButton>
 
@@ -93,9 +96,13 @@ const MainHeader = ({ onSearch }) => {
 					anchorEl={anchorEl}
 					open={Boolean(anchorEl)}
 					onClose={handleClose}>
-					<MenuItem onClick={handleClose}>Manage Information</MenuItem>
+					<MenuItem onClick={() => navigate(`/home/account`)}>
+						Manage information
+					</MenuItem>
 					<MenuItem onClick={handleLogout}>
-						<ExitToAppIcon sx={{ marginRight: 1 }} />
+						<ExitToAppIcon
+							sx={{ color: theme.palette.primary.main, marginRight: 1 }}
+						/>
 						Log out
 					</MenuItem>
 				</Menu>
