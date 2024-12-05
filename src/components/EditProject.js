@@ -98,7 +98,7 @@ const EditProject = () => {
 				reportid: project.reportid,
 			};
 			console.log("Updated project:", updatedProject);
-			dispatch(updateProject(updatedProject, projectId));
+			dispatch(updateProject(updatedProject));
 			setIsEditing(false);
 			navigate("/home/projects");
 		}
