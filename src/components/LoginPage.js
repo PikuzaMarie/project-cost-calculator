@@ -11,8 +11,11 @@ import {
 	Alert,
 	Stack,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 const LoginPage = () => {
+	const theme = useTheme();
+
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
@@ -42,129 +45,136 @@ const LoginPage = () => {
 				alignItems: "center",
 				justifyContent: "center",
 				height: "100vh",
+				backgroundColor: theme.palette.white.main,
 			}}>
 			<Stack
 				direction={{ xs: "column", md: "row" }}
 				spacing={0}
 				alignItems="stretch"
-				sx={{ width: "100%" }}>
+				sx={{ width: "80%" }}>
 				<Box
 					sx={{
+						display: "flex",
+						flexDirection: "column",
+						gap: "30px",
 						textAlign: "left",
 						width: "50%",
-						backgroundColor: "#ffffff",
+						backgroundColor: "white",
 						padding: 3,
-						borderRadius: 2,
-						boxShadow: 3,
 					}}>
-					<CalculateIcon
-						fontSize="large"
-						color="primary"
-						sx={{
-							marginBottom: "10px",
-						}}
-					/>
 					<Box
 						sx={{
 							display: "flex",
 							flexDirection: "column",
-							marginBottom: "40px",
+							width: "400px",
 						}}>
+						<CalculateIcon
+							fontSize="large"
+							sx={{
+								margin: "0 0 10px 0",
+								color: theme.palette.primary.main,
+							}}
+						/>
 						<Typography
 							variant="h4"
-							color="#01579b"
 							fontWeight="800"
-							gutterBottom>
+							gutterBottom
+							sx={{ color: "black" }}>
 							CheckCost
 						</Typography>
 						<Typography
 							variant="h6"
-							gutterBottom
 							sx={{
 								letterSpacing: "0.5px",
 								lineHeight: "130%",
+								color: theme.palette.custom.dark_gray,
 							}}>
-							Easy and fast calculation of software development cost using a
-							destructuring method
+							Easy and fast calculation of software development cost
 						</Typography>
 					</Box>
-
-					<Typography
-						variant="body1"
-						gutterBottom>
-						<b>Version 0.0.0 is available now! </b>
-					</Typography>
-					<ol
-						style={{
-							textAlign: "left",
-							padding: "0 16px",
-							margin: "8px 0 0",
+					<Box
+						sx={{
+							color: theme.palette.custom.gray,
 						}}>
-						<li>Create, update, delete a project </li>
-						<li>Create a report using a simple form </li>
-						<li>Export a report to show it to the client </li>
-					</ol>
+						<Typography variant="body1">
+							<b>Version 0.0.0 is available now! </b>
+						</Typography>
+						<ol
+							style={{
+								textAlign: "left",
+								padding: "0 16px",
+								margin: "8px 0 0",
+							}}>
+							<li>Create, update, delete a project and view its details</li>
+							<li>Create a report using a simple form</li>
+							<li>View report details for each project if it has any</li>
+						</ol>
+					</Box>
 				</Box>
 
 				<Box
 					sx={{
-						textAlign: "center",
-						width: "50%",
-						backgroundColor: "#e0e9fa",
-						padding: 3,
-						borderRadius: 2,
-						boxShadow: 3,
 						display: "flex",
 						flexDirection: "column",
 						justifyContent: "center",
 						alignItems: "center",
 						minHeight: "300px",
+						textAlign: "center",
+						width: "50%",
+						padding: 3,
+						backgroundColor: theme.palette.background.main,
+						color: "black",
+						borderRadius: 2,
 					}}>
 					<Typography
 						variant="h4"
-						gutterBottom>
+						gutterBottom
+						fontWeight="600">
 						Login
 					</Typography>
-					<form
-						onSubmit={handleLogin}
-						style={{ width: "80%" }}>
-						<TextField
-							label="Email"
-							type="email"
-							margin="normal"
-							value={email}
-							size="small"
-							onChange={(e) => setEmail(e.target.value)}
-							required
+					<form onSubmit={handleLogin}>
+						<Box
 							sx={{
-								backgroundColor: "#ffffff",
-								width: "80%",
-							}}
-						/>
-						<TextField
-							label="Password"
-							type="password"
-							margin="normal"
-							value={password}
-							size="small"
-							onChange={(e) => setPassword(e.target.value)}
-							required
-							sx={{
-								backgroundColor: "#ffffff",
-								width: "80%",
-							}}
-						/>
+								display: "flex",
+								flexDirection: "column",
+								justifyContent: "center",
+								alignItems: "center",
+								gap: "8px",
+								marginBottom: "16px",
+							}}>
+							<TextField
+								label="Email"
+								type="email"
+								value={email}
+								size="small"
+								onChange={(e) => setEmail(e.target.value)}
+								required
+								sx={{
+									backgroundColor: theme.palette.white.main,
+									width: "100%",
+								}}
+							/>
+							<TextField
+								label="Password"
+								type="password"
+								value={password}
+								size="small"
+								onChange={(e) => setPassword(e.target.value)}
+								required
+								sx={{
+									backgroundColor: theme.palette.white.main,
+									width: "100%",
+								}}
+							/>
+						</Box>
+
 						<Button
 							type="submit"
 							variant="contained"
 							sx={{
-								mt: 2,
-								backgroundColor: "#0288d1",
-								color: "#ffffff",
-								"&:hover": { backgroundColor: "#01579b" },
-								width: "80%",
 								marginLeft: "auto",
 								marginRight: "auto",
+								width: "100%",
 							}}>
 							Login
 						</Button>
