@@ -7,11 +7,17 @@ const initialState = {
 	error: null,
 };
 
-// Получение всех отчетов
+const validateToken = (token, rejectWithValue) => {
+	if (!token) {
+		return rejectWithValue("No token found");
+	}
+};
+
 export const fetchAllReports = createAsyncThunk(
 	"reports/fetchAllReports",
 	async (_, { rejectWithValue }) => {
 		const token = localStorage.getItem("token");
+		validateToken(token, rejectWithValue);
 		try {
 			const response = await axios.get("http://localhost:5000/api/reports", {
 				headers: {
@@ -22,15 +28,16 @@ export const fetchAllReports = createAsyncThunk(
 
 			return response.data;
 		} catch (error) {
-			return rejectWithValue(error.response?.data || error.message);
+			return rejectWithValue(`Failed to fetch all reports: ${error.message}`);
 		}
 	}
 );
-//Получение отчёта по id
+
 export const fetchReportByProjectId = createAsyncThunk(
 	"reports/fetchReportByProjectId",
 	async (projectId, { rejectWithValue }) => {
 		const token = localStorage.getItem("token");
+		validateToken(token, rejectWithValue);
 		try {
 			const response = await axios.get(
 				`http://localhost:5000/api/projects/${projectId}/report`,
@@ -44,15 +51,16 @@ export const fetchReportByProjectId = createAsyncThunk(
 
 			return response.data;
 		} catch (error) {
-			return rejectWithValue(error.response?.data || error.message);
+			return rejectWithValue(`Failed to fetch report by id: ${error.message}`);
 		}
 	}
 );
-// Создание или обновление отчета
+
 export const createOrUpdateReport = createAsyncThunk(
 	"reports/createOrUpdateReport",
 	async ({ projectId, report }, { rejectWithValue }) => {
 		const token = localStorage.getItem("token");
+		validateToken(token, rejectWithValue);
 		try {
 			const response = await axios.post(
 				`http://localhost:5000/api/projects/${projectId}/report`,
@@ -66,15 +74,18 @@ export const createOrUpdateReport = createAsyncThunk(
 			);
 			return { projectId, report: response.data };
 		} catch (error) {
-			return rejectWithValue(error.response?.data || error.message);
+			return rejectWithValue(
+				`Failed to create or upadate report: ${error.message}`
+			);
 		}
 	}
 );
-// Удаление отчета why projectId
+
 export const deleteReport = createAsyncThunk(
 	"reports/deleteReport",
 	async (projectId, { rejectWithValue }) => {
 		const token = localStorage.getItem("token");
+		validateToken(token, rejectWithValue);
 		try {
 			await axios.delete(
 				`http://localhost:5000/api/projects/${projectId}/report`,
@@ -87,7 +98,7 @@ export const deleteReport = createAsyncThunk(
 			);
 			return projectId;
 		} catch (error) {
-			return rejectWithValue(error.response?.data || error.message);
+			return rejectWithValue(`Failed to delete report: ${error.message}`);
 		}
 	}
 );
@@ -113,6 +124,7 @@ const reportsSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder
+			// Fetch all reports
 			.addCase(fetchAllReports.pending, (state) => {
 				state.status = "loading";
 			})
@@ -124,12 +136,12 @@ const reportsSlice = createSlice({
 				state.status = "failed";
 				state.error = action.payload;
 			})
+			// Fetch report
 			.addCase(fetchReportByProjectId.pending, (state) => {
 				state.status = "loading";
 			})
 			.addCase(fetchReportByProjectId.fulfilled, (state, action) => {
 				state.status = "succeeded";
-				// Обновляем отчет для конкретного проекта (например, если он уже существует)
 				const index = state.reports.findIndex(
 					(report) => report.projectId === action.payload.projectId
 				);
@@ -143,12 +155,12 @@ const reportsSlice = createSlice({
 				state.status = "failed";
 				state.error = action.payload;
 			})
+			// Create or update reports
 			.addCase(createOrUpdateReport.pending, (state) => {
 				state.status = "loading";
 			})
 			.addCase(createOrUpdateReport.fulfilled, (state, action) => {
 				state.status = "succeeded";
-				// Обновляем или добавляем отчет
 				const index = state.reports.findIndex(
 					(report) => report.id === action.payload.report.id
 				);
@@ -162,12 +174,12 @@ const reportsSlice = createSlice({
 				state.status = "failed";
 				state.error = action.payload;
 			})
+			// Delete report
 			.addCase(deleteReport.pending, (state) => {
 				state.status = "loading";
 			})
 			.addCase(deleteReport.fulfilled, (state, action) => {
 				state.status = "succeeded";
-				// Удаляем отчет по ID проекта
 				state.reports = state.reports.filter(
 					(report) => report.projectId !== action.payload
 				);

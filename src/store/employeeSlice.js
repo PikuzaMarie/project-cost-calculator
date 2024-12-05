@@ -3,53 +3,47 @@ import axios from "axios";
 
 const initialState = {
 	data: null,
-	status: "idle", // idle | loading | succeeded | failed
+	status: "idle",
 	error: null,
 };
 
-// Асинхронный экшн для получения данных сотрудника
+const validateToken = (token, rejectWithValue) => {
+	if (!token) {
+		return rejectWithValue("No token found");
+	}
+};
+
 export const fetchEmployee = createAsyncThunk(
 	"employee/fetchEmployee",
 	async (_, { rejectWithValue }) => {
 		const token = localStorage.getItem("token");
-		if (!token) {
-			return rejectWithValue("No token found. Please log in.");
-		}
-
+		validateToken(token, rejectWithValue);
 		try {
 			const response = await axios.get("http://localhost:5000/api/employee", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 			console.log(response.data);
 			return response.data;
-		} catch (err) {
-			return rejectWithValue(
-				err.response?.data?.message || "Failed to fetch employee data"
-			);
+		} catch (error) {
+			return rejectWithValue(`Failed to fetch employee: ${error.message}`);
 		}
 	}
 );
 
-// Асинхронный экшн для обновления данных сотрудника
 export const updateEmployee = createAsyncThunk(
 	"employee/updateEmployee",
 	async (employeeData, { rejectWithValue }) => {
 		const token = localStorage.getItem("token");
-		if (!token) {
-			return rejectWithValue("No token found. Please log in.");
-		}
-
+		validateToken(token, rejectWithValue);
 		try {
 			const response = await axios.put(
 				"http://localhost:5000/api/employee",
 				employeeData,
 				{ headers: { Authorization: `Bearer ${token}` } }
 			);
-			return response.data; // Возвращаем данные от сервера
-		} catch (err) {
-			return rejectWithValue(
-				err.response?.data?.message || "Failed to update employee data"
-			);
+			return response.data;
+		} catch (error) {
+			return rejectWithValue(`Failed to update employee: ${error.message}`);
 		}
 	}
 );
