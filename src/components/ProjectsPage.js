@@ -4,11 +4,10 @@ import {
 	Button,
 	Box,
 	Typography,
-	List,
-	ListItem,
 	Pagination,
 	Breadcrumbs,
 	Link,
+	Grid2,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import CreateProjectForm from "./CreateProjectForm";
@@ -19,14 +18,16 @@ import {
 	addProject,
 	deleteProject,
 } from "../store/projectsSlice";
+import { useTheme } from "@emotion/react";
 
 const ProjectsPage = () => {
+	const theme = useTheme();
 	const navigate = useNavigate();
 	const location = useLocation();
 	const dispatch = useDispatch();
 	const { projects, error } = useSelector((state) => state.projects);
 	const [open, setOpen] = useState(false);
-	const projectsPerPage = 2;
+	const projectsPerPage = 4;
 
 	const [searchQuery, setSearchQuery] = useState("");
 
@@ -94,7 +95,7 @@ const ProjectsPage = () => {
 				sx={{
 					display: "flex",
 					flexDirection: "column",
-					padding: "16px 32px",
+					padding: "24px 32px",
 					gap: "40px",
 				}}>
 				<Breadcrumbs aria-label="breadcrumb">
@@ -104,17 +105,23 @@ const ProjectsPage = () => {
 						href="/home">
 						Main
 					</Link>
-					<Typography sx={{ color: "text.primary" }}>Projects</Typography>
+					<Typography sx={{ color: theme.palette.black.main }}>
+						Projects
+					</Typography>
 				</Breadcrumbs>
 				<Box sx={{ display: "flex", justifyContent: "space-between" }}>
 					<Typography
 						variant="h6"
-						gutterBottom>
+						component="p"
+						gutterBottom
+						sx={{
+							color: theme.palette.custom.gray,
+							fontWeight: 500,
+						}}>
 						Total Projects: {filteredProjects.length}
 					</Typography>
 					<Button
-						variant="contained"
-						color="primary"
+						variant="containedSecondary"
 						size="normal"
 						onClick={() => setOpen(true)}>
 						New project
@@ -123,39 +130,55 @@ const ProjectsPage = () => {
 
 				{error && (
 					<Typography
-						variant="body2"
-						sx={{ color: "error.main", textAlign: "center" }}>
-						{error.message}
+						variant="body1"
+						sx={{
+							color: theme.palette.error.contrastText,
+							textAlign: "center",
+							backgroundColor: theme.palette.error.light,
+						}}>
+						{error}
 					</Typography>
 				)}
 
-				<Box sx={{ padding: "20px", backgroundColor: "#f5f5f5" }}>
+				<Grid2
+					container
+					spacing={12}
+					size={{ xs: 6, md: 8 }}
+					sx={{
+						backgroundColor: theme.palette.white.main,
+						color: theme.palette.black.main,
+					}}>
 					{currentProjects.length > 0 ? (
-						<List>
-							{currentProjects.map((project) => (
-								<ListItem key={project.id}>
-									<ProjectDetails
-										projectId={project.id}
-										projectName={project.projectname}
-										clientName={project.clientname}
-										cost={project.cost}
-										projectDescription={project.projectdescription}
-										projectStatus={project.projectstatus}
-										createdDate={project.createddate}
-										onEditProject={() => handleEditProject(project.id)}
-										onDeleteProject={() => handleDeleteProject(project.id)}
-									/>
-								</ListItem>
-							))}
-						</List>
+						currentProjects.map((project) => (
+							<Grid2
+								xs={6}
+								md={4}
+								key={project.id}>
+								<ProjectDetails
+									projectId={project.id}
+									projectName={project.projectname}
+									clientName={project.clientname}
+									cost={project.cost}
+									projectDescription={project.projectdescription}
+									projectStatus={project.projectstatus}
+									createdDate={project.createddate}
+									onEditProject={() => handleEditProject(project.id)}
+									onDeleteProject={() => handleDeleteProject(project.id)}
+								/>
+							</Grid2>
+						))
 					) : (
-						<Typography
-							variant="body2"
-							sx={{ color: "#555", textAlign: "center" }}>
-							No projects available.
-						</Typography>
+						<Grid2
+							item
+							xs={12}>
+							<Typography
+								variant="body2"
+								sx={{ color: theme.palette.black.main, textAlign: "center" }}>
+								No projects available.
+							</Typography>
+						</Grid2>
 					)}
-				</Box>
+				</Grid2>
 
 				<Box
 					sx={{ marginTop: "20px", display: "flex", justifyContent: "center" }}>
