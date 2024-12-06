@@ -6,15 +6,18 @@ import {
 	Typography,
 	Breadcrumbs,
 	Link,
-	InputLabel,
 	Select,
 	MenuItem,
 	IconButton,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useNavigate, useParams } from "react-router-dom";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { useTheme } from "@mui/material/styles";
 import MainHeader from "./MainHeader";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+
 import {
 	fetchProjects,
 	deleteProject,
@@ -23,6 +26,7 @@ import {
 import { fetchAllReports } from "../store/reportsSlice";
 
 const EditProject = () => {
+	const theme = useTheme();
 	const navigate = useNavigate();
 	const { projectId } = useParams();
 	const dispatch = useDispatch();
@@ -133,7 +137,7 @@ const EditProject = () => {
 	return (
 		<Box>
 			<MainHeader />
-			<Box sx={{ padding: "16px 32px" }}>
+			<Box sx={{ padding: "24px 32px" }}>
 				<Breadcrumbs aria-label="breadcrumb">
 					<Link
 						underline="hover"
@@ -147,22 +151,28 @@ const EditProject = () => {
 						href="/home/projects">
 						Projects
 					</Link>
-					<Typography sx={{ color: "text.primary" }}>
+					<Typography sx={{ color: theme.palette.black.main }}>
 						{project.projectname}
 					</Typography>
 				</Breadcrumbs>
-				<Box sx={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+				<Box
+					sx={{
+						display: "flex",
+						alignItems: "center",
+						gap: "10px",
+						marginTop: "40px",
+					}}>
 					<IconButton
-						onClick={() => navigate(-1)}
+						onClick={() => navigate(`/home/projects`)}
 						edge="start"
-						color="primary"
 						aria-label="back">
 						<ArrowBackIcon />
 					</IconButton>
 					<Typography
-						variant="h5"
-						component="h3">
-						{isEditing ? "Edit Project" : "View Project"}
+						variant="h4"
+						component="h3"
+						fontWeight="500">
+						{isEditing ? "Edit Project" : "Project Details"}
 					</Typography>
 				</Box>
 			</Box>
@@ -179,7 +189,7 @@ const EditProject = () => {
 						name="projectname"
 						label="Project Name"
 						variant="outlined"
-						sx={{ width: "400px" }}
+						sx={{ width: "100%" }}
 						value={project.projectname}
 						onChange={(e) =>
 							setProject({ ...project, projectname: e.target.value })
@@ -189,7 +199,7 @@ const EditProject = () => {
 						name="clientname"
 						label="Client Name"
 						variant="outlined"
-						sx={{ width: "400px" }}
+						sx={{ width: "100%" }}
 						value={project.clientname}
 						onChange={(e) =>
 							setProject({ ...project, clientname: e.target.value })
@@ -199,17 +209,22 @@ const EditProject = () => {
 						name="projectdescription"
 						label="Project Description"
 						variant="outlined"
-						sx={{ width: "400px" }}
+						multiline
+						rows={3}
+						sx={{
+							width: "100%",
+							maxWidth: "100%",
+							minHeight: "100px",
+							resize: "none",
+						}}
 						value={project.projectdescription}
 						onChange={(e) =>
 							setProject({ ...project, projectdescription: e.target.value })
 						}
 					/>
-					<InputLabel id="select-label">Status</InputLabel>
 					<Select
 						name="projectstatus"
-						labelId="select-label"
-						sx={{ width: "400px" }}
+						sx={{ width: "100%" }}
 						value={project.projectstatus}
 						label="Status"
 						onChange={(e) =>
@@ -223,7 +238,7 @@ const EditProject = () => {
 						name="closeddate"
 						label="Closed Date"
 						variant="outlined"
-						sx={{ width: "400px" }}
+						sx={{ width: "100%" }}
 						type="date"
 						value={formatDate(project.closeddate) || formatDate(closedDate)}
 						onChange={(e) =>
@@ -234,70 +249,117 @@ const EditProject = () => {
 					<Box sx={{ marginTop: "20px", display: "flex", gap: "20px" }}>
 						<Button
 							variant="contained"
-							color="primary"
-							onClick={handleSave}>
+							size="normal"
+							onClick={handleSave}
+							color="success">
 							Save Changes
 						</Button>
 						<Button
 							variant="outlined"
-							color="secondary"
+							size="normal"
 							onClick={handleCancel}>
 							Cancel
 						</Button>
 					</Box>
 				</Box>
 			) : (
-				<Box sx={{ padding: "0 32px" }}>
-					<Typography variant="body1">
-						<strong>Project Name:</strong> {project.projectname}
-					</Typography>
-					<Typography variant="body1">
-						<strong>Client Name:</strong> {project.clientname}
-					</Typography>
-					<Typography variant="body1">
-						<strong>Description:</strong> {project.projectdescription}
-					</Typography>
-					<Typography variant="body1">
-						<strong>Status:</strong> {project.projectstatus}
-					</Typography>
-					<Typography variant="body1">
-						<strong>Total Cost: </strong>
-						{(currentReport && currentReport.totalcost) || project.cost} $
-					</Typography>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						gap: "20px",
+						padding: "24px 32px",
+						maxWidth: "700px",
+					}}>
+					<Box>
+						<Typography
+							variant="h5"
+							sx={{ fontWeight: "600" }}>
+							{project.projectname}
+						</Typography>
+						<Typography
+							variant="body1"
+							sx={{ color: theme.palette.custom.dark_gray }}>
+							<strong>Client:</strong> {project.clientname}
+						</Typography>
+						<Typography
+							variant="body2"
+							sx={{ marginTop: "8px" }}>
+							<strong>Description:</strong> {project.projectdescription}
+						</Typography>
+						<Box sx={{ display: "flex", alignItems: "center" }}>
+							<Typography sx={{ fontWeight: "500", marginRight: "8px" }}>
+								<strong>Status:</strong>
+							</Typography>
+							{project.projectstatus === "active" ? (
+								<CheckCircleIcon
+									sx={{
+										width: 24,
+										height: 24,
+										color: theme.palette.success.main,
+									}}
+								/>
+							) : (
+								<CancelIcon
+									sx={{
+										width: 24,
+										height: 24,
+										color: theme.palette.error.main,
+									}}
+								/>
+							)}
+						</Box>
+					</Box>
+
 					{currentReport && currentReport.id && (
-						<Box sx={{ marginTop: "8px" }}>
-							{
-								<Box sx={{ marginTop: "8px", marginBottom: "8px" }}>
-									<Button
-										variant="contained"
-										size="small"
-										onClick={handleOpenReport}>
-										View Latest Report
-									</Button>
-								</Box>
-							}
+						<Box
+							sx={{
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "space-between",
+								padding: "16px 0px",
+								borderTop: "1px solid",
+								borderBottom: "1px solid",
+								borderColor: theme.palette.custom.dark_gray,
+							}}>
+							<Typography
+								variant="h4"
+								sx={{ fontWeight: "700" }}>
+								<strong>Total Cost:</strong> $
+								{(currentReport && currentReport.totalcost) || project.cost}
+							</Typography>
+							<Button
+								variant="contained"
+								onClick={handleOpenReport}>
+								View Latest Report
+							</Button>
 						</Box>
 					)}
-					<Typography variant="body1">
-						<strong>Created Date:</strong>{" "}
-						{formatDate(project.createddate) || "N/A"}
-					</Typography>
-					<Typography variant="body1">
-						<strong>Closed Date:</strong>{" "}
-						{formatDate(project.closeddate) || "N/A"}
-					</Typography>
 
-					<Box sx={{ marginTop: "20px", display: "flex", gap: "20px" }}>
+					<Box sx={{ display: "flex", gap: "20px" }}>
+						<Typography variant="body1">
+							<strong>Created Date: </strong>
+							{formatDate(project.createddate)}
+						</Typography>
+						<Typography variant="body1">
+							<strong>Closed Date: </strong>
+							{formatDate(project.closeddate) || "N/A"}
+						</Typography>
+					</Box>
+
+					<Box sx={{ display: "flex", gap: "16px" }}>
 						<Button
 							variant="contained"
-							color="primary"
-							onClick={() => setIsEditing(true)}>
+							size="normal"
+							onClick={() => setIsEditing(true)}
+							color={theme.palette.secondary.main}>
 							Edit Project
 						</Button>
 						<Button
 							variant="outlined"
-							color="secondary"
-							onClick={handleDelete}>
+							size="normal"
+							onClick={handleDelete}
+							color="error">
 							Delete Project
 						</Button>
 					</Box>
