@@ -15,7 +15,7 @@ const ReportDetails = () => {
 
 	const { reports, status, error } = useSelector((state) => state.reports);
 
-	const employeeName = useSelector((state) => state.employee?.name);
+	const employee = useSelector((state) => state.employee.employee);
 
 	const report = reports.find((r) => r.projectid === parseInt(projectId, 10));
 
@@ -136,7 +136,7 @@ const ReportDetails = () => {
 					</Typography>
 					<Typography variant="body1">
 						<strong>Author: </strong>
-						{employeeName}
+						{employee.name}
 					</Typography>
 				</Box>
 			</Box>
