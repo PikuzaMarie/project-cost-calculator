@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MainHeader from "./MainHeader";
 import { Box, Button, Typography } from "@mui/material";
@@ -8,7 +8,6 @@ import { useTheme } from "@mui/material/styles";
 
 const HomePage = () => {
 	const theme = useTheme();
-	const [user, setUser] = useState(null);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const { employee, status, error } = useSelector((state) => state.employee);
@@ -16,10 +15,8 @@ const HomePage = () => {
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		if (!token) {
-			navigate("/login");
+			navigate("/");
 		} else {
-			const decodedToken = JSON.parse(atob(token.split(".")[1]));
-			setUser(decodedToken);
 			dispatch(fetchEmployee());
 		}
 	}, [navigate, dispatch]);
