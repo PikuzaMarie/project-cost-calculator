@@ -14,6 +14,8 @@ const CreateReportForm = () => {
 	const dispatch = useDispatch();
 
 	//Get reports from store
+	const projects = useSelector((state) => state.projects.projects || []);
+	const project = projects.find((p) => p.id === parseInt(projectId, 10));
 	const reports = useSelector((state) => state.reports.reports || []);
 	const report = reports.find((r) => r.projectid === parseInt(projectId, 10));
 
@@ -150,16 +152,54 @@ const CreateReportForm = () => {
 		}
 	};
 
+	const handleNumericChange = (e, setter) => {
+		const value = e.target.value;
+		const regex = /^\d*\.?\d*$/;
+		if (regex.test(value)) {
+			setter(value);
+		}
+	};
+
 	return (
 		<Box
 			component="form"
 			onSubmit={handleSubmit}
-			sx={{ padding: "16px", maxWidth: "600px", margin: "auto" }}>
-			<Typography
-				variant="h5"
-				mb={2}>
-				{report ? "Edit Report" : "Create Report"} for Project ID: {projectId}
-			</Typography>
+			sx={{
+				display: "flex",
+				flexDirection: "column",
+				gap: "30px",
+				maxWidth: "600px",
+				margin: "40px auto",
+			}}>
+			<Box
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					gap: "10px",
+					textAlign: "center",
+				}}>
+				<Typography
+					variant="h4"
+					fontWeight="600">
+					{report ? "Edit Report" : "Create Report"}
+				</Typography>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						textAlign: "left",
+					}}>
+					<Typography variant="subtitle1">
+						<strong>Project: </strong>
+						{project.projectname}
+					</Typography>
+					<Typography variant="subtitle1">
+						<strong>Client: </strong>
+						{project.clientname}
+					</Typography>
+				</Box>
+			</Box>
+
 			{error && (
 				<Typography
 					color="error"
@@ -167,171 +207,201 @@ const CreateReportForm = () => {
 					{error}
 				</Typography>
 			)}
-			<TextField
-				label="Report Name"
-				fullWidth
-				margin="normal"
-				value={reportName}
-				onChange={(e) => setReportName(e.target.value)}
-				required
-			/>
-			<TextField
-				label="Budget"
-				fullWidth
-				margin="normal"
-				type="number"
-				value={budget.toString()}
-				onChange={(e) => {
-					setBudget(e.target.value);
-					calculateTotalCost();
-				}}
-				required
-			/>
-			<Box sx={{ marginBottom: "20px" }}>
-				<Typography
-					variant="h6"
-					sx={{ marginTop: "20px" }}>
-					Project Manager
-				</Typography>
+			<Box sx={{ display: "flex", flexDirection: "column", gap: "35px" }}>
+				<Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+					<TextField
+						label="Report Name"
+						value={reportName}
+						onChange={(e) => setReportName(e.target.value)}
+						required
+					/>
+					<TextField
+						label="Budget"
+						value={budget.toString()}
+						variant="filled"
+						onChange={(e) => handleNumericChange(e, setBudget)}
+						required
+					/>
+				</Box>
+
 				<Box
 					sx={{
 						display: "flex",
+						flexDirection: "column",
 						gap: "10px",
-						marginBottom: "10px",
-						paddingTop: "0px",
+					}}>
+					<Typography variant="h6">Project Manager</Typography>
+					<Box
+						sx={{
+							display: "flex",
+							gap: "8px",
+						}}>
+						<TextField
+							label="Hourly Rate"
+							value={projectManager.hourlyRate}
+							variant="filled"
+							onChange={(e) => {
+								handleNumericChange(e, (value) => {
+									setProjectManager({ ...projectManager, hourlyRate: value });
+								});
+								calculateTotalCost();
+							}}
+							required
+						/>
+						<TextField
+							label="Hours Worked"
+							value={projectManager.hoursWorked}
+							variant="filled"
+							onChange={(e) => {
+								handleNumericChange(e, (value) => {
+									setProjectManager({
+										...projectManager,
+										hoursWorked: value,
+									});
+								});
+								calculateTotalCost();
+							}}
+							required
+						/>
+					</Box>
+				</Box>
+
+				<TeamForm
+					team={developerTeam}
+					setTeam={setDeveloperTeam}
+					calculateTotalCost={calculateTotalCost}
+					teamType="developers"
+				/>
+				<TeamForm
+					team={analystTeam}
+					setTeam={setAnalystTeam}
+					calculateTotalCost={calculateTotalCost}
+					teamType="analysts"
+				/>
+				<TeamForm
+					team={designTeam}
+					setTeam={setDesignTeam}
+					calculateTotalCost={calculateTotalCost}
+					teamType="designers"
+				/>
+				<TeamForm
+					team={testTeam}
+					setTeam={setTestTeam}
+					calculateTotalCost={calculateTotalCost}
+					teamType="testers"
+				/>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						gap: "10px",
 					}}>
 					<TextField
-						label="Hourly Rate"
-						fullWidth
-						type="number"
-						value={projectManager.hourlyRate}
+						label="Equipment Depreciation"
+						value={equipmentDepreciation.toString()}
+						variant="filled"
 						onChange={(e) => {
-							setProjectManager({
-								...projectManager,
-								hourlyRate: e.target.value,
-							});
+							handleNumericChange(e, setEquipmentDepreciation);
 							calculateTotalCost();
 						}}
 						required
 					/>
 					<TextField
-						label="Hours Worked"
-						fullWidth
-						type="number"
-						value={projectManager.hoursWorked}
+						label="Service Subscriptions"
+						value={serviceSubscriptions.toString()}
+						variant="filled"
 						onChange={(e) => {
-							setProjectManager({
-								...projectManager,
-								hoursWorked: e.target.value,
-							});
+							handleNumericChange(e, setServiceSubscriptions);
 							calculateTotalCost();
 						}}
 						required
 					/>
+				</Box>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						gap: "10px",
+					}}>
+					{customFields.map((field, index) => (
+						<Box
+							key={index}
+							sx={{ display: "flex", gap: "8px" }}>
+							<TextField
+								label="Description"
+								value={field.description}
+								onChange={(e) => {
+									const newFields = [...customFields];
+									newFields[index].description = e.target.value;
+									setCustomFields(newFields);
+								}}
+								sx={{ width: "50%" }}
+							/>
+							<TextField
+								label="Amount"
+								value={field.amount.toString()}
+								variant="filled"
+								onChange={(e) =>
+									handleNumericChange(e, (value) => {
+										const newFields = [...customFields];
+										newFields[index].amount = e.target.value;
+										setCustomFields(newFields);
+										calculateTotalCost();
+									})
+								}
+								sx={{ width: "50%" }}
+							/>
+						</Box>
+					))}
+					<Button
+						variant="outlined"
+						onClick={() => {
+							setCustomFields([
+								...customFields,
+								{ description: "", amount: "" },
+							]);
+						}}
+						sx={{ width: "100%" }}>
+						Add Custom Field
+					</Button>
+				</Box>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						gap: "10px",
+					}}>
+					{report && report.totalcost && (
+						<Typography variant="h5">
+							<strong>Previous Cost: </strong>
+							{report.totalcost}
+						</Typography>
+					)}
+					<Typography variant="h5">
+						<strong>Total Cost: </strong>
+						{totalCost}
+					</Typography>
+				</Box>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						gap: "10px",
+					}}>
+					<Button
+						type="submit"
+						variant="contained"
+						sx={{ width: "100%" }}>
+						Save Report
+					</Button>
+					<Button
+						variant="outlined"
+						onClick={() => navigate(`/home/projects`)}
+						sx={{ width: "100%" }}>
+						Cancel
+					</Button>
 				</Box>
 			</Box>
-
-			<TeamForm
-				team={developerTeam}
-				setTeam={setDeveloperTeam}
-				calculateTotalCost={calculateTotalCost}
-				teamType="developers"
-			/>
-			<TeamForm
-				team={analystTeam}
-				setTeam={setAnalystTeam}
-				calculateTotalCost={calculateTotalCost}
-				teamType="analysts"
-			/>
-			<TeamForm
-				team={designTeam}
-				setTeam={setDesignTeam}
-				calculateTotalCost={calculateTotalCost}
-				teamType="designers"
-			/>
-			<TeamForm
-				team={testTeam}
-				setTeam={setTestTeam}
-				calculateTotalCost={calculateTotalCost}
-				teamType="testers"
-			/>
-			<TextField
-				label="Equipment Depreciation"
-				fullWidth
-				margin="normal"
-				type="number"
-				value={equipmentDepreciation.toString()}
-				onChange={(e) => {
-					setEquipmentDepreciation(e.target.value);
-					calculateTotalCost();
-				}}
-				required
-			/>
-			<TextField
-				label="Service Subscriptions"
-				fullWidth
-				margin="normal"
-				type="number"
-				value={serviceSubscriptions.toString()}
-				onChange={(e) => {
-					setServiceSubscriptions(e.target.value);
-					calculateTotalCost();
-				}}
-				required
-			/>
-			{customFields.map((field, index) => (
-				<Box
-					key={index}
-					sx={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
-					<TextField
-						label="Description"
-						value={field.description}
-						onChange={(e) => {
-							const newFields = [...customFields];
-							newFields[index].description = e.target.value;
-							setCustomFields(newFields);
-						}}
-					/>
-					<TextField
-						label="Amount"
-						value={field.amount.toString()}
-						onChange={(e) => {
-							const newFields = [...customFields];
-							newFields[index].amount = e.target.value;
-							setCustomFields(newFields);
-							calculateTotalCost();
-						}}
-						type="number"
-					/>
-				</Box>
-			))}
-			<Button
-				variant="outlined"
-				onClick={() => {
-					setCustomFields([...customFields, { description: "", amount: "" }]);
-				}}>
-				Add Custom Field
-			</Button>
-			{report && report.totalcost && (
-				<Typography
-					variant="h6"
-					sx={{ marginTop: "20px" }}>
-					Previous Cost: {report.totalcost}
-				</Typography>
-			)}
-			<Typography
-				variant="h6"
-				sx={{ marginTop: "20px" }}>
-				Total Cost: {totalCost}
-			</Typography>
-			<Button
-				type="submit"
-				variant="contained"
-				color="primary"
-				fullWidth
-				sx={{ marginTop: "16px" }}>
-				Save Report
-			</Button>
 		</Box>
 	);
 };
