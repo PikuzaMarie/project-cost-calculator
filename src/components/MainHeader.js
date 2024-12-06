@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { logout } from "../store/employeeSlice";
+import { logout } from "../store/slices/employeeSlice";
 import {
 	Box,
 	Avatar,

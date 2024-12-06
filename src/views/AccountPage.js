@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { updateEmployee } from "../store/employeeSlice";
+import { updateEmployee } from "../store/slices/employeeSlice";
 import { useTheme } from "@mui/material/styles";
 import {
 	Box,
@@ -13,7 +13,7 @@ import {
 	IconButton,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import MainHeader from "./MainHeader";
+import MainHeader from "../components/MainHeader";
 
 const AccountPage = () => {
 	const theme = useTheme();

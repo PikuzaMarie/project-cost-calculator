@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
 	createOrUpdateReport,
 	fetchReportByProjectId,
-} from "../store/reportsSlice";
+} from "../store/slices/reportsSlice";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import TeamForm from "./TeamForm";

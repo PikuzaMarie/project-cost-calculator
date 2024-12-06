@@ -10,9 +10,9 @@ import {
 	REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import projectsReducer from "./projectsSlice";
-import reportsReducer from "./reportsSlice";
-import employeeReducer from "./employeeSlice";
+import projectsReducer from "./slices/projectsSlice";
+import reportsReducer from "./slices/reportsSlice";
+import employeeReducer from "./slices/employeeSlice";
 
 const persistConfig = {
 	key: "root",

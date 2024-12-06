@@ -14,7 +14,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useTheme } from "@mui/material/styles";
-import MainHeader from "./MainHeader";
+import MainHeader from "../components/MainHeader";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -22,8 +22,8 @@ import {
 	fetchProjects,
 	deleteProject,
 	updateProject,
-} from "../store/projectsSlice";
-import { fetchAllReports } from "../store/reportsSlice";
+} from "../store/slices/projectsSlice";
+import { fetchAllReports } from "../store/slices/reportsSlice";
 
 const EditProject = () => {
 	const theme = useTheme();

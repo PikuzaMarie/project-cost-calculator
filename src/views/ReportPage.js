@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchReportByProjectId } from "../store/reportsSlice";
-import MainHeader from "./MainHeader";
+import { fetchReportByProjectId } from "../store/slices/reportsSlice";
+import MainHeader from "../components/MainHeader";
 import { Box, Typography, IconButton, Breadcrumbs, Link } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useTheme } from "@mui/material/styles";
@@ -116,7 +116,7 @@ const ReportDetails = () => {
 						paddingBottom: "16px",
 						borderTop: "1px solid",
 						borderBottom: "1px solid",
-						borderColor: theme.palette.custom.gray700,
+						borderColor: theme.palette.custom.gray,
 					}}>
 					<Typography
 						variant="h4"

@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import MainHeader from "./MainHeader";
+import MainHeader from "../components/MainHeader";
 import { Box, Button, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchEmployee } from "../store/employeeSlice";
+import { fetchEmployee } from "../store/slices/employeeSlice";
 import { useTheme } from "@mui/material/styles";
 
 const HomePage = () => {

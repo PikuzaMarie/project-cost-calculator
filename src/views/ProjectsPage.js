@@ -10,14 +10,14 @@ import {
 	Grid2,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
-import CreateProjectForm from "./CreateProjectForm";
-import ProjectDetails from "./ProjectDetails";
-import MainHeader from "./MainHeader";
+import CreateProjectForm from "../components/CreateProjectForm";
+import ProjectDetails from "../components/ProjectDetails";
+import MainHeader from "../components/MainHeader";
 import {
 	fetchProjects,
 	addProject,
 	deleteProject,
-} from "../store/projectsSlice";
+} from "../store/slices/projectsSlice";
 import { useTheme } from "@emotion/react";
 
 const ProjectsPage = () => {
