@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const initialState = {
-	data: null,
+	employee: null,
 	status: "idle",
 	error: null,
 };
@@ -58,7 +58,7 @@ const employeeSlice = createSlice({
 	initialState,
 	reducers: {
 		logout: (state) => {
-			state.data = null;
+			state.employee = null;
 			state.status = "idle";
 			state.error = null;
 		},
@@ -72,7 +72,7 @@ const employeeSlice = createSlice({
 			})
 			.addCase(fetchEmployee.fulfilled, (state, action) => {
 				state.status = "succeeded";
-				state.data = action.payload;
+				state.employee = action.payload;
 			})
 			.addCase(fetchEmployee.rejected, (state, action) => {
 				state.status = "failed";
@@ -85,7 +85,8 @@ const employeeSlice = createSlice({
 			})
 			.addCase(updateEmployee.fulfilled, (state, action) => {
 				state.status = "succeeded";
-				state.data = action.payload;
+				console.log("Updated employee:", action.payload.employee);
+				state.employee = action.payload.employee;
 			})
 			.addCase(updateEmployee.rejected, (state, action) => {
 				state.status = "failed";

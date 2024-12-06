@@ -6,6 +6,7 @@ import ProjectsPage from "./components/ProjectsPage";
 import EditProject from "./components/EditProject";
 import CreateReportForm from "./components/CreateReportForm";
 import ReportDetails from "./components/ReportDetails";
+import AccountPage from "./components/AccountPage";
 
 const App = () => {
 	return (
@@ -35,6 +36,10 @@ const App = () => {
 				<Route
 					path="/home/projects/:projectId/report/:reportId"
 					element={<ReportDetails />}
+				/>
+				<Route
+					path="/home/account"
+					element={<AccountPage />}
 				/>
 			</Routes>
 		</Router>
