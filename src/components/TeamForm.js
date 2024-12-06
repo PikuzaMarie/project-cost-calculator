@@ -16,46 +16,57 @@ const TeamForm = ({ team, setTeam, calculateTotalCost, teamType }) => {
 		]);
 	};
 
+	const handleNumericChange = (e, setter, index, field) => {
+		const value = e.target.value;
+		const regex = /^\d*\.?\d*$/;
+		if (regex.test(value)) {
+			setter(index, field, value);
+		}
+	};
+
 	return (
-		<Box sx={{ marginBottom: "20px" }}>
-			<Typography
-				variant="h6"
-				sx={{ marginTop: "20px" }}>
+		<Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+			<Typography variant="h6">
 				{teamType.charAt(0).toUpperCase() + teamType.slice(1)} Team
 			</Typography>
 			{team.map((member, index) => (
 				<Box
 					key={index}
-					sx={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+					sx={{ display: "flex", gap: "8px" }}>
 					<TextField
-						label={`${
-							teamType.charAt(0).toUpperCase() + teamType.slice(1, -1)
-						}`}
+						label="Amount"
 						value={member[teamType]}
-						onChange={(e) => handleChange(index, teamType, e.target.value)}
-						type="number"
+						variant="filled"
+						onChange={(e) =>
+							handleNumericChange(e, handleChange, index, teamType)
+						}
 						required
 					/>
 					<TextField
 						label="Hourly Rate"
 						value={member.hourlyRate}
-						onChange={(e) => handleChange(index, "hourlyRate", e.target.value)}
-						type="number"
+						variant="filled"
+						onChange={(e) =>
+							handleNumericChange(e, handleChange, index, "hourlyRate")
+						}
 						required
 					/>
 					<TextField
 						label="Hours Worked"
 						value={member.hoursWorked}
-						onChange={(e) => handleChange(index, "hoursWorked", e.target.value)}
-						type="number"
+						variant="filled"
+						onChange={(e) =>
+							handleNumericChange(e, handleChange, index, "hoursWorked")
+						}
 						required
 					/>
 				</Box>
 			))}
 			<Button
 				variant="contained"
-				onClick={handleAddMember}>
-				Add {teamType.charAt(0).toUpperCase() + teamType.slice(1)}
+				onClick={handleAddMember}
+				sx={{ width: "100%" }}>
+				Add {teamType.charAt(0).toUpperCase() + teamType.slice(1, -1)}
 			</Button>
 		</Box>
 	);
