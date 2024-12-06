@@ -7,6 +7,7 @@ import {
 	TextField,
 	Button,
 	Typography,
+	Box,
 } from "@mui/material";
 
 const CreateProjectForm = ({ open, onClose, onSubmit }) => {
@@ -24,7 +25,7 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 	}, [open]);
 
 	const handleSubmit = () => {
-		if (!projectName || !clientName || !projectDescription || !createdDate) {
+		if (!projectName || !clientName || !createdDate) {
 			setError("All fields are required.");
 			return;
 		}
@@ -45,14 +46,27 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 	return (
 		<Dialog
 			open={open}
-			onClose={onClose}>
-			<DialogTitle>Create a new project</DialogTitle>
-			<DialogContent>
+			onClose={onClose}
+			sx={{
+				padding: "16px",
+			}}>
+			<DialogTitle
+				variant="h5"
+				fontWeight="600">
+				Create a new project
+			</DialogTitle>
+			<DialogContent
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					justifyContent: "center",
+					gap: "10px",
+					width: "600px",
+				}}>
 				{error && (
 					<Typography
 						variant="body2"
-						color="error"
-						sx={{ marginBottom: "16px" }}>
+						color="error">
 						{error}
 					</Typography>
 				)}
@@ -61,7 +75,6 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 					autoFocus
 					margin="dense"
 					label="Project Name"
-					fullWidth
 					value={projectName}
 					onChange={(e) => setProjectName(e.target.value)}
 					required
@@ -70,7 +83,6 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 					name="clientname"
 					margin="dense"
 					label="Client Name"
-					fullWidth
 					value={clientName}
 					onChange={(e) => setClientName(e.target.value)}
 					required
@@ -79,7 +91,6 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 					name="projectdescription"
 					margin="dense"
 					label="Project Description"
-					fullWidth
 					multiline
 					value={projectDescription}
 					onChange={(e) => setProjectDescription(e.target.value)}
@@ -89,7 +100,6 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 					name="createddate"
 					margin="dense"
 					label="Created Date"
-					fullWidth
 					type="date"
 					value={createdDate}
 					onChange={(e) => setCreatedDate(e.target.value)}
@@ -98,18 +108,24 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 				/>
 			</DialogContent>
 			<DialogActions>
-				<Button
-					variant="outlined"
-					onClick={onClose}
-					color="primary">
-					Cancel
-				</Button>
-				<Button
-					variant="contained"
-					onClick={handleSubmit}
-					color="primary">
-					Create Project
-				</Button>
+				<Box
+					sx={{
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "flex-end",
+						gap: "16px",
+					}}>
+					<Button
+						variant="outlined"
+						onClick={onClose}>
+						Cancel
+					</Button>
+					<Button
+						variant="contained"
+						onClick={handleSubmit}>
+						Create Project
+					</Button>
+				</Box>
 			</DialogActions>
 		</Dialog>
 	);
