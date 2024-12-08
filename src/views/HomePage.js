@@ -5,6 +5,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchEmployee } from "../store/slices/employeeSlice";
 import { useTheme } from "@mui/material/styles";
+import { jwtDecode } from "jwt-decode";
 
 const HomePage = () => {
 	const theme = useTheme();
@@ -17,7 +18,15 @@ const HomePage = () => {
 		if (!token) {
 			navigate("/");
 		} else {
-			dispatch(fetchEmployee());
+			const decodedToken = jwtDecode(token);
+			const currentTime = Date.now() / 1000;
+
+			if (decodedToken.exp < currentTime) {
+				localStorage.removeItem("token");
+				navigate("/");
+			} else {
+				dispatch(fetchEmployee());
+			}
 		}
 	}, [navigate, dispatch]);
 

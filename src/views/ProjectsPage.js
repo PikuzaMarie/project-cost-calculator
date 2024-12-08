@@ -24,6 +24,7 @@ import {
 import ClearIcon from "@mui/icons-material/Clear";
 import { useTheme } from "@emotion/react";
 import DeleteDialog from "../components/DeleteDialog";
+import { jwtDecode } from "jwt-decode";
 
 const ProjectsPage = () => {
 	const theme = useTheme();
@@ -44,12 +45,19 @@ const ProjectsPage = () => {
 
 	useEffect(() => {
 		const token = localStorage.getItem("token");
-
 		if (!token) {
-			navigate("/login");
+			navigate("/");
 		} else {
-			dispatch(clearError());
-			dispatch(fetchProjects(token));
+			const decodedToken = jwtDecode(token);
+			const currentTime = Date.now() / 1000;
+
+			if (decodedToken.exp < currentTime) {
+				localStorage.removeItem("token");
+				navigate("/");
+			} else {
+				dispatch(clearError());
+				dispatch(fetchProjects(token));
+			}
 		}
 	}, [dispatch, navigate]);
 
@@ -192,6 +200,7 @@ const ProjectsPage = () => {
 									projectDescription={project.projectdescription}
 									projectStatus={project.projectstatus}
 									createdDate={project.createddate}
+									reportId={project.reportid}
 									onEditProject={() => handleEditProject(project.id)}
 									onDeleteProject={() => handleOpenDeleteDialog(project.id)}
 								/>

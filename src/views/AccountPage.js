@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MainHeader from "../components/MainHeader";
+import { jwtDecode } from "jwt-decode";
 
 const AccountPage = () => {
 	const theme = useTheme();
@@ -37,6 +38,14 @@ const AccountPage = () => {
 		const token = localStorage.getItem("token");
 		if (!token) {
 			navigate("/");
+		} else {
+			const decodedToken = jwtDecode(token);
+			const currentTime = Date.now() / 1000;
+
+			if (decodedToken.exp < currentTime) {
+				localStorage.removeItem("token");
+				navigate("/");
+			}
 		}
 	}, [navigate]);
 
@@ -223,7 +232,7 @@ const AccountPage = () => {
 							<Typography
 								variant="body1"
 								sx={{ color: theme.palette.black.main }}>
-								<strong>Department:</strong> winterday@gmail.com
+								<strong>Email:</strong> winterday@gmail.com
 							</Typography>
 							<Typography
 								variant="body1"

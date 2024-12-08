@@ -6,6 +6,7 @@ import MainHeader from "../components/MainHeader";
 import { Box, Typography, IconButton, Breadcrumbs, Link } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useTheme } from "@mui/material/styles";
+import { jwtDecode } from "jwt-decode";
 
 const ReportDetails = () => {
 	const theme = useTheme();
@@ -18,6 +19,21 @@ const ReportDetails = () => {
 	const employee = useSelector((state) => state.employee.employee);
 
 	const report = reports.find((r) => r.projectid === parseInt(projectId, 10));
+
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			navigate("/login");
+		} else {
+			const decodedToken = jwtDecode(token);
+			const currentTime = Date.now() / 1000;
+
+			if (decodedToken.exp < currentTime) {
+				localStorage.removeItem("token");
+				navigate("/");
+			}
+		}
+	}, [navigate]);
 
 	useEffect(() => {
 		if (!report) {

@@ -25,6 +25,7 @@ import {
 	updateProject,
 } from "../store/slices/projectsSlice";
 import { fetchAllReports } from "../store/slices/reportsSlice";
+import { jwtDecode } from "jwt-decode";
 
 const EditProject = () => {
 	const theme = useTheme();
@@ -39,6 +40,21 @@ const EditProject = () => {
 	const [isEditing, setIsEditing] = useState(false);
 
 	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			navigate("/");
+		} else {
+			const decodedToken = jwtDecode(token);
+			const currentTime = Date.now() / 1000;
+
+			if (decodedToken.exp < currentTime) {
+				localStorage.removeItem("token");
+				navigate("/");
+			}
+		}
+	}, [navigate]);
 
 	useEffect(() => {
 		if (!projectId) {
