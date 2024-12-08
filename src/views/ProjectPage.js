@@ -15,6 +15,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useTheme } from "@mui/material/styles";
 import MainHeader from "../components/MainHeader";
+import DeleteDialog from "../components/DeleteDialog";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -36,6 +37,8 @@ const EditProject = () => {
 	const [currentReport, setCurrentReport] = useState(null);
 	const [closedDate, setClosedDate] = useState("");
 	const [isEditing, setIsEditing] = useState(false);
+
+	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
 	useEffect(() => {
 		if (!projectId) {
@@ -117,10 +120,9 @@ const EditProject = () => {
 
 	// Функция удаления проекта
 	const handleDelete = () => {
-		if (window.confirm("Are you sure you want to delete this project?")) {
-			dispatch(deleteProject(projectId));
-			navigate("/home/projects");
-		}
+		dispatch(deleteProject(projectId));
+		navigate("/home/projects");
+		setOpenDeleteDialog(false);
 	};
 
 	// Функция открытия последнего отчета
@@ -358,13 +360,18 @@ const EditProject = () => {
 						<Button
 							variant="outlined"
 							size="normal"
-							onClick={handleDelete}
+							onClick={() => setOpenDeleteDialog(true)}
 							color="error">
 							Delete Project
 						</Button>
 					</Box>
 				</Box>
 			)}
+			<DeleteDialog
+				open={openDeleteDialog}
+				onClose={() => setOpenDeleteDialog(false)}
+				onSubmit={handleDelete}
+			/>
 		</Box>
 	);
 };

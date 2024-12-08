@@ -19,6 +19,7 @@ import {
 	deleteProject,
 } from "../store/slices/projectsSlice";
 import { useTheme } from "@emotion/react";
+import DeleteDialog from "../components/DeleteDialog";
 
 const ProjectsPage = () => {
 	const theme = useTheme();
@@ -27,6 +28,8 @@ const ProjectsPage = () => {
 	const dispatch = useDispatch();
 	const { projects, error } = useSelector((state) => state.projects);
 	const [open, setOpen] = useState(false);
+	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+	const [projectToDelete, setProjectToDelete] = useState(null);
 	const projectsPerPage = 4;
 
 	const [searchQuery, setSearchQuery] = useState("");
@@ -75,8 +78,17 @@ const ProjectsPage = () => {
 		navigate(`/home/projects/${id}`);
 	};
 
-	const handleDeleteProject = (projectId) => {
-		dispatch(deleteProject(projectId));
+	const handleOpenDeleteDialog = (projectId) => {
+		setProjectToDelete(projectId);
+		setOpenDeleteDialog(true);
+	};
+
+	const handleDeleteProject = () => {
+		if (projectToDelete) {
+			dispatch(deleteProject(projectToDelete));
+		}
+		setOpenDeleteDialog(false);
+		setProjectToDelete(null); // Сбрасываем ID
 	};
 
 	const addNewProject = (project) => {
@@ -164,7 +176,7 @@ const ProjectsPage = () => {
 									projectStatus={project.projectstatus}
 									createdDate={project.createddate}
 									onEditProject={() => handleEditProject(project.id)}
-									onDeleteProject={() => handleDeleteProject(project.id)}
+									onDeleteProject={() => handleOpenDeleteDialog(project.id)}
 								/>
 							</Grid2>
 						))
@@ -195,6 +207,12 @@ const ProjectsPage = () => {
 					open={open}
 					onClose={() => setOpen(false)}
 					onSubmit={addNewProject}
+				/>
+
+				<DeleteDialog
+					open={openDeleteDialog}
+					onClose={() => setOpenDeleteDialog(false)}
+					onSubmit={handleDeleteProject}
 				/>
 			</Box>
 		</Box>
