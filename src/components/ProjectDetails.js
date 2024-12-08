@@ -9,6 +9,7 @@ const ProjectDetails = ({
 	cost,
 	projectStatus,
 	projectId,
+	reportId,
 	onEditProject,
 	onDeleteProject,
 }) => {
@@ -59,7 +60,7 @@ const ProjectDetails = ({
 						onClick={handleCreateReport}
 						variant="contained"
 						disabled={projectStatus === "inactive"}>
-						Create Report
+						{reportId !== null ? "Update report" : "Create Report"}
 					</Button>
 					<Button
 						onClick={onEditProject}
