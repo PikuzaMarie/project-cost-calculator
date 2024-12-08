@@ -43,6 +43,11 @@ const theme = createTheme({
 
 					"&:hover": { backgroundColor: "#00695c" },
 				},
+				containedError: {
+					backgroundColor: "#f44336",
+
+					"&:hover": { backgroundColor: "#ba000d" },
+				},
 				outlined: {
 					backgroundColor: "transparent",
 					color: "#009688",
