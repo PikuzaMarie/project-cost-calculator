@@ -81,9 +81,7 @@ const ProjectDetails = ({
 					component="p"
 					sx={{
 						color:
-							cost > 0
-								? theme.palette.custom.black
-								: theme.palette.custom.gray700,
+							cost > 0 ? theme.palette.custom.black : theme.palette.custom.gray,
 					}}>
 					{cost} $
 				</Typography>
