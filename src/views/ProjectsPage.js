@@ -147,6 +147,7 @@ const ProjectsPage = () => {
 					sx={{
 						backgroundColor: theme.palette.white.main,
 						color: theme.palette.black.main,
+						minHeight: "428px",
 					}}>
 					{currentProjects.length > 0 ? (
 						currentProjects.map((project) => (
