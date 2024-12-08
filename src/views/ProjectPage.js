@@ -9,10 +9,12 @@ import {
 	Select,
 	MenuItem,
 	IconButton,
+	Alert,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import ClearIcon from "@mui/icons-material/Clear";
 import { useTheme } from "@mui/material/styles";
 import MainHeader from "../components/MainHeader";
 import DeleteDialog from "../components/DeleteDialog";
@@ -38,6 +40,8 @@ const EditProject = () => {
 	const [currentReport, setCurrentReport] = useState(null);
 	const [closedDate, setClosedDate] = useState("");
 	const [isEditing, setIsEditing] = useState(false);
+
+	const [error, setError] = useState(false);
 
 	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
@@ -107,23 +111,20 @@ const EditProject = () => {
 		if (!token) {
 			navigate("/login");
 		} else {
-			if (
-				!project.projectname ||
-				!project.clientname ||
-				!project.projectdescription
-			) {
-				alert("Please fill in all required fields.");
+			if (!project.projectname || !project.clientname) {
+				setError(true);
 				return;
+			} else {
+				const updatedProject = {
+					...project,
+					cost: project.cost || 0,
+					reportid: project.reportid,
+				};
+				console.log("Updated project:", updatedProject);
+				dispatch(updateProject(updatedProject));
+				setIsEditing(false);
+				navigate("/home/projects");
 			}
-			const updatedProject = {
-				...project,
-				cost: project.cost || 0,
-				reportid: project.reportid,
-			};
-			console.log("Updated project:", updatedProject);
-			dispatch(updateProject(updatedProject));
-			setIsEditing(false);
-			navigate("/home/projects");
 		}
 	};
 
@@ -132,6 +133,7 @@ const EditProject = () => {
 		setIsEditing(false);
 		const projectToEdit = projects.find((p) => p.id.toString() === projectId);
 		setProject(projectToEdit);
+		setError(false);
 	};
 
 	// Функция удаления проекта
@@ -194,6 +196,7 @@ const EditProject = () => {
 					</Typography>
 				</Box>
 			</Box>
+
 			{isEditing ? (
 				<Box
 					sx={{
@@ -203,6 +206,31 @@ const EditProject = () => {
 						padding: "0 32px",
 						width: "50vw",
 					}}>
+					{error && (
+						<Alert
+							variant="outlined"
+							severity="error"
+							sx={{
+								display: "flex",
+								gap: "4px",
+								alignItems: "center",
+								color: theme.palette.error.main,
+							}}>
+							<Box
+								sx={{
+									display: "flex",
+									alignItems: "center",
+									gap: "15vw",
+								}}>
+								<Typography color="error">
+									Project name and client name are required
+								</Typography>
+								<IconButton onClick={() => setError(false)}>
+									<ClearIcon color="error" />
+								</IconButton>
+							</Box>
+						</Alert>
+					)}
 					<TextField
 						name="projectname"
 						label="Project Name"
@@ -212,6 +240,7 @@ const EditProject = () => {
 						onChange={(e) =>
 							setProject({ ...project, projectname: e.target.value })
 						}
+						required
 					/>
 					<TextField
 						name="clientname"
@@ -222,6 +251,7 @@ const EditProject = () => {
 						onChange={(e) =>
 							setProject({ ...project, clientname: e.target.value })
 						}
+						required
 					/>
 					<TextField
 						name="projectdescription"
