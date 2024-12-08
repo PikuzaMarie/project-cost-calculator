@@ -94,7 +94,6 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 					multiline
 					value={projectDescription}
 					onChange={(e) => setProjectDescription(e.target.value)}
-					required
 				/>
 				<TextField
 					name="createddate"
