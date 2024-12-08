@@ -56,7 +56,7 @@ const MainHeader = ({ onSearch }) => {
 				display: "flex",
 				justifyContent: "space-between",
 				alignItems: "center",
-				width: "100vw",
+				width: "100%",
 				height: "68px",
 				padding: "0 32px 0",
 				backgroundColor: theme.palette.primary.dark,
