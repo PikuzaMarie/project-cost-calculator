@@ -8,6 +8,8 @@ import {
 	Breadcrumbs,
 	Link,
 	Grid2,
+	Alert,
+	IconButton,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import CreateProjectForm from "../components/CreateProjectForm";
@@ -17,7 +19,9 @@ import {
 	fetchProjects,
 	addProject,
 	deleteProject,
+	clearError,
 } from "../store/slices/projectsSlice";
+import ClearIcon from "@mui/icons-material/Clear";
 import { useTheme } from "@emotion/react";
 import DeleteDialog from "../components/DeleteDialog";
 
@@ -44,6 +48,7 @@ const ProjectsPage = () => {
 		if (!token) {
 			navigate("/login");
 		} else {
+			dispatch(clearError());
 			dispatch(fetchProjects(token));
 		}
 	}, [dispatch, navigate]);
@@ -141,15 +146,27 @@ const ProjectsPage = () => {
 				</Box>
 
 				{error && (
-					<Typography
-						variant="body1"
+					<Alert
+						variant="outlined"
+						severity="error"
 						sx={{
-							color: theme.palette.error.contrastText,
-							textAlign: "center",
-							backgroundColor: theme.palette.error.light,
+							display: "flex",
+							gap: "4px",
+							alignItems: "center",
+							color: theme.palette.error.main,
 						}}>
-						{error}
-					</Typography>
+						<Box
+							sx={{
+								display: "flex",
+								alignItems: "center",
+								gap: "67vw",
+							}}>
+							<Typography color="error"> {error}</Typography>
+							<IconButton onClick={() => dispatch(clearError())}>
+								<ClearIcon color="error" />
+							</IconButton>
+						</Box>
+					</Alert>
 				)}
 
 				<Grid2
