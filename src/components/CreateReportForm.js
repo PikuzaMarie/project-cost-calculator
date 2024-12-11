@@ -137,8 +137,9 @@ const CreateReportForm = () => {
 			setError("Total Cost must be a valid number greater than zero.");
 			return;
 		}
-
-		const reportdate = new Date().toISOString().split("T")[0];
+		const now = new Date();
+		now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+		const reportDate = now.toISOString().split("T")[0];
 
 		const reportData = {
 			reportname: reportName,
