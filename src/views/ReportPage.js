@@ -18,7 +18,7 @@ const ReportDetails = () => {
 
 	const employee = useSelector((state) => state.employee.employee);
 
-	const report = reports.find((r) => r.projectid === parseInt(projectId, 10));
+	const report = reports.find((r) => r.project_id === parseInt(projectId, 10));
 
 	useEffect(() => {
 		const token = localStorage.getItem("token");
@@ -123,7 +123,7 @@ const ReportDetails = () => {
 				<Typography
 					variant="h5"
 					sx={{ fontWeight: "600" }}>
-					{report.reportname}
+					{report.report_name}
 				</Typography>
 				<Box
 					sx={{
@@ -141,7 +141,7 @@ const ReportDetails = () => {
 					<Typography
 						variant="h4"
 						sx={{ fontWeight: "700", marginTop: "8px" }}>
-						<strong>Calculated cost: </strong> {report.totalcost} $
+						<strong>Calculated cost: </strong> {report.total_cost} $
 					</Typography>
 					<Box
 						sx={{
@@ -153,29 +153,29 @@ const ReportDetails = () => {
 						<Typography
 							variant="h6"
 							sx={{ fontWeight: "700", marginTop: "8px" }}>
-							<strong>Development cost:</strong> {report.devcost} $
+							<strong>Development cost:</strong> {report.dev_cost} $
 						</Typography>
 						<Typography
 							variant="h6"
 							sx={{ fontWeight: "700", marginTop: "8px" }}>
-							<strong>Deprecation cost:</strong> {report.deprecationcost} $
+							<strong>Deprecation cost:</strong> {report.deprecation_cost} $
 						</Typography>
 						<Typography
 							variant="h6"
 							sx={{ fontWeight: "700", marginTop: "8px" }}>
-							<strong>Subscription cost:</strong> {report.subscriptioncost} $
+							<strong>Subscription cost:</strong> {report.subscription_cost} $
 						</Typography>
 						<Typography
 							variant="h6"
 							sx={{ fontWeight: "700", marginTop: "8px" }}>
-							<strong>Additional cost:</strong> {report.additionalcost} $
+							<strong>Additional cost:</strong> {report.additional_cost} $
 						</Typography>
 					</Box>
 				</Box>
 				<Box sx={{ marginTop: "16px", display: "flex", gap: "20px" }}>
 					<Typography variant="body1">
 						<strong>Created date: </strong>
-						{formatDate(report.reportcreateddate)}
+						{formatDate(report.report_created_date)}
 					</Typography>
 					<Typography variant="body1">
 						<strong>Author: </strong>

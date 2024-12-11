@@ -19,7 +19,7 @@ import { useTheme } from "@mui/material/styles";
 import MainHeader from "../components/MainHeader";
 import DeleteDialog from "../components/DeleteDialog";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 import {
 	fetchProjects,
@@ -45,6 +45,9 @@ const EditProject = () => {
 
 	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
+	const location = useLocation();
+	const [page, setPage] = useState(1);
+
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		if (!token) {
@@ -59,6 +62,13 @@ const EditProject = () => {
 			}
 		}
 	}, [navigate]);
+
+	useEffect(() => {
+		const qParams = new URLSearchParams(location.search);
+		const pageFromURL = parseInt(qParams.get("page") || 1);
+		setPage(pageFromURL);
+		console.log(pageFromURL);
+	}, [location.search]);
 
 	useEffect(() => {
 		if (!projectId) {
@@ -90,7 +100,7 @@ const EditProject = () => {
 	useEffect(() => {
 		if (reports.length > 0 && project) {
 			const report = reports.find(
-				(report) => report.projectid === parseInt(projectId, 10)
+				(report) => report.project_id === parseInt(projectId, 10)
 			);
 			setCurrentReport(report || null);
 		}
@@ -111,19 +121,19 @@ const EditProject = () => {
 		if (!token) {
 			navigate("/login");
 		} else {
-			if (!project.projectname || !project.clientname) {
+			if (!project.project_name || !project.client_name) {
 				setError(true);
 				return;
 			} else {
 				const updatedProject = {
 					...project,
 					cost: project.cost || 0,
-					reportid: project.reportid,
+					reportid: project.report_id,
 				};
 				console.log("Updated project:", updatedProject);
 				dispatch(updateProject(updatedProject));
 				setIsEditing(false);
-				navigate("/home/projects");
+				navigate(`/home/projects?page=${page}`);
 			}
 		}
 	};
@@ -139,7 +149,7 @@ const EditProject = () => {
 	// Функция удаления проекта
 	const handleDelete = () => {
 		dispatch(deleteProject(projectId));
-		navigate("/home/projects");
+		navigate(`/home/projects?page=${page}`);
 		setOpenDeleteDialog(false);
 	};
 
@@ -183,7 +193,7 @@ const EditProject = () => {
 						marginTop: "40px",
 					}}>
 					<IconButton
-						onClick={() => navigate(`/home/projects`)}
+						onClick={() => navigate(`/home/projects?page=${page}`)}
 						edge="start"
 						aria-label="back">
 						<ArrowBackIcon />
@@ -236,9 +246,9 @@ const EditProject = () => {
 						label="Project Name"
 						variant="outlined"
 						sx={{ width: "100%" }}
-						value={project.projectname}
+						value={project.project_name}
 						onChange={(e) =>
-							setProject({ ...project, projectname: e.target.value })
+							setProject({ ...project, project_name: e.target.value })
 						}
 						required
 					/>
@@ -247,9 +257,9 @@ const EditProject = () => {
 						label="Client Name"
 						variant="outlined"
 						sx={{ width: "100%" }}
-						value={project.clientname}
+						value={project.client_name}
 						onChange={(e) =>
-							setProject({ ...project, clientname: e.target.value })
+							setProject({ ...project, client_name: e.target.value })
 						}
 						required
 					/>
@@ -265,18 +275,18 @@ const EditProject = () => {
 							minHeight: "100px",
 							resize: "none",
 						}}
-						value={project.projectdescription}
+						value={project.project_description}
 						onChange={(e) =>
-							setProject({ ...project, projectdescription: e.target.value })
+							setProject({ ...project, project_description: e.target.value })
 						}
 					/>
 					<Select
 						name="projectstatus"
 						sx={{ width: "100%" }}
-						value={project.projectstatus}
+						value={project.project_status}
 						label="Status"
 						onChange={(e) =>
-							setProject({ ...project, projectstatus: e.target.value })
+							setProject({ ...project, project_status: e.target.value })
 						}
 						required>
 						<MenuItem value="active">Active</MenuItem>
@@ -288,9 +298,9 @@ const EditProject = () => {
 						variant="outlined"
 						sx={{ width: "100%" }}
 						type="date"
-						value={formatDate(project.closeddate) || formatDate(closedDate)}
+						value={formatDate(project.closed_date) || formatDate(closedDate)}
 						onChange={(e) =>
-							setProject({ ...project, closeddate: e.target.value })
+							setProject({ ...project, closed_date: e.target.value })
 						}
 						InputLabelProps={{ shrink: true }}
 					/>
@@ -323,23 +333,23 @@ const EditProject = () => {
 						<Typography
 							variant="h5"
 							sx={{ fontWeight: "600" }}>
-							{project.projectname}
+							{project.project_name}
 						</Typography>
 						<Typography
 							variant="body1"
 							sx={{ color: theme.palette.custom.dark_gray }}>
-							<strong>Client:</strong> {project.clientname}
+							<strong>Client:</strong> {project.client_name}
 						</Typography>
 						<Typography
 							variant="body2"
 							sx={{ marginTop: "8px" }}>
-							<strong>Description:</strong> {project.projectdescription}
+							<strong>Description:</strong> {project.project_description}
 						</Typography>
 						<Box sx={{ display: "flex", alignItems: "center" }}>
 							<Typography sx={{ fontWeight: "500", marginRight: "8px" }}>
 								<strong>Status:</strong>
 							</Typography>
-							{project.projectstatus === "active" ? (
+							{project.project_status === "active" ? (
 								<CheckCircleIcon
 									sx={{
 										width: 24,
@@ -374,7 +384,7 @@ const EditProject = () => {
 								variant="h4"
 								sx={{ fontWeight: "700" }}>
 								<strong>Total Cost:</strong> $
-								{(currentReport && currentReport.totalcost) || project.cost}
+								{(currentReport && currentReport.total_cost) || project.cost}
 							</Typography>
 							<Button
 								variant="contained"
@@ -387,11 +397,11 @@ const EditProject = () => {
 					<Box sx={{ display: "flex", gap: "20px" }}>
 						<Typography variant="body1">
 							<strong>Created Date: </strong>
-							{formatDate(project.createddate)}
+							{formatDate(project.created_date)}
 						</Typography>
 						<Typography variant="body1">
 							<strong>Closed Date: </strong>
-							{formatDate(project.closeddate) || "N/A"}
+							{formatDate(project.closed_date) || "N/A"}
 						</Typography>
 					</Box>
 

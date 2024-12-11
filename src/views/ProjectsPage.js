@@ -71,7 +71,7 @@ const ProjectsPage = () => {
 	};
 
 	const filteredProjects = projects.filter((project) =>
-		project.clientname.toLowerCase().includes(searchQuery.toLowerCase())
+		project.client_name.toLowerCase().includes(searchQuery.toLowerCase())
 	);
 
 	const handleSearch = (query) => {
@@ -192,13 +192,13 @@ const ProjectsPage = () => {
 								key={project.id}>
 								<ProjectDetails
 									projectId={project.id}
-									projectName={project.projectname}
-									clientName={project.clientname}
+									projectName={project.project_name}
+									clientName={project.client_name}
 									cost={project.cost}
-									projectDescription={project.projectdescription}
-									projectStatus={project.projectstatus}
-									createdDate={project.createddate}
-									reportId={project.reportid}
+									projectDescription={project.project_description}
+									projectStatus={project.project_status}
+									createdDate={project.created_date}
+									reportId={project.report_id}
 									onEditProject={() => handleEditProject(project.id)}
 									onDeleteProject={() => handleOpenDeleteDialog(project.id)}
 								/>

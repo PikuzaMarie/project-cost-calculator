@@ -34,13 +34,13 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 		setError("");
 
 		const newProject = {
-			projectname: projectName,
-			clientname: clientName,
-			projectdescription: projectDescription,
-			projectstatus: "active",
-			createddate: createdDate,
+			project_name: projectName,
+			client_name: clientName,
+			project_description: projectDescription,
+			project_status: "active",
+			created_date: createdDate,
 			cost: 0,
-			reportid: null,
+			report_id: null,
 		};
 		onSubmit(newProject);
 		resetForm();

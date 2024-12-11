@@ -285,7 +285,7 @@ const AccountPage = () => {
 								- active:{" "}
 								{
 									projects.filter(
-										(project) => project.projectstatus === "active"
+										(project) => project.project_status === "active"
 									).length
 								}
 							</Typography>
@@ -293,7 +293,7 @@ const AccountPage = () => {
 								- inactive:{" "}
 								{
 									projects.filter(
-										(project) => project.projectstatus === "inactive"
+										(project) => project.project_status === "inactive"
 									).length
 								}
 							</Typography>

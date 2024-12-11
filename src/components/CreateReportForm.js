@@ -17,7 +17,7 @@ const CreateReportForm = () => {
 	const projects = useSelector((state) => state.projects.projects || []);
 	const project = projects.find((p) => p.id === parseInt(projectId, 10));
 	const reports = useSelector((state) => state.reports.reports || []);
-	const report = reports.find((r) => r.projectid === parseInt(projectId, 10));
+	const report = reports.find((r) => r.project_id === parseInt(projectId, 10));
 
 	const [reportName, setReportName] = useState("");
 	const [budget, setBudget] = useState(0);
@@ -57,11 +57,11 @@ const CreateReportForm = () => {
 	// Fill in fields if report already exists
 	useEffect(() => {
 		if (report) {
-			setReportName(report.reportname || "");
+			setReportName(report.report_name || "");
 			setBudget(report.budget ? report.budget.toString() : "");
-			setTotalCost(report.totalcost || 0);
-			setEquipmentDepreciation(report.deprecationcost || 0);
-			setServiceSubscriptions(report.subscriptioncost || 0);
+			setTotalCost(report.total_cost || 0);
+			setEquipmentDepreciation(report.deprecation_cost || 0);
+			setServiceSubscriptions(report.subscription_cost || 0);
 		} else {
 			setReportName("");
 			setBudget("");
@@ -142,14 +142,14 @@ const CreateReportForm = () => {
 		const reportDate = now.toISOString().split("T")[0];
 
 		const reportData = {
-			reportname: reportName,
-			totalcost: totalCost,
-			reportcreateddate: reportdate,
+			report_name: reportName,
+			total_cost: totalCost,
+			report_created_date: reportDate,
 			budget: parseInt(budget),
-			devcost: devCost,
-			deprecationcost: parseInt(equipmentDepreciation),
-			subscriptioncost: parseInt(serviceSubscriptions),
-			additionalcost: additionalCost,
+			dev_cost: devCost,
+			deprecation_cost: parseInt(equipmentDepreciation),
+			subscription_cost: parseInt(serviceSubscriptions),
+			additional_cost: additionalCost,
 		};
 
 		try {
@@ -203,11 +203,11 @@ const CreateReportForm = () => {
 					}}>
 					<Typography variant="subtitle1">
 						<strong>Project: </strong>
-						{project.projectname}
+						{project.project_name}
 					</Typography>
 					<Typography variant="subtitle1">
 						<strong>Client: </strong>
-						{project.clientname}
+						{project.client_name}
 					</Typography>
 				</Box>
 			</Box>
@@ -383,10 +383,10 @@ const CreateReportForm = () => {
 						flexDirection: "column",
 						gap: "10px",
 					}}>
-					{report && report.totalcost && (
+					{report && report.total_cost && (
 						<Typography variant="h5">
 							<strong>Previous Cost: </strong>
-							{report.totalcost}
+							{report.total_cost}
 						</Typography>
 					)}
 					<Typography variant="h5">

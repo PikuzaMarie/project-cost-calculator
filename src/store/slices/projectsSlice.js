@@ -9,9 +9,9 @@ const initialState = {
 
 const sortProjectsByName = (projects) => {
 	return [...projects].sort((a, b) => {
-		if (a.projectname.toLowerCase() < b.projectname.toLowerCase()) {
+		if (a.project_name.toLowerCase() < b.project_name.toLowerCase()) {
 			return -1;
-		} else if (a.projectname.toLowerCase() > b.projectname.toLowerCase()) {
+		} else if (a.project_name.toLowerCase() > b.project_name.toLowerCase()) {
 			return 1;
 		} else {
 			return 0;
