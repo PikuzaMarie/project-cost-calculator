@@ -41,6 +41,13 @@ const CreateProjectForm = ({ open, onClose, onSubmit }) => {
 			reportid: null,
 		};
 		onSubmit(newProject);
+		resetForm();
+	};
+
+	const resetForm = () => {
+		setProjectName("");
+		setClientName("");
+		setProjectDescription("");
 	};
 
 	return (
