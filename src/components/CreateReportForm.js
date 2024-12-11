@@ -37,6 +37,8 @@ const CreateReportForm = () => {
 	const [testTeam, setTestTeam] = useState([
 		{ testers: "", hourlyRate: "", hoursWorked: "" },
 	]);
+	const [devCost, setDevCost] = useState(0);
+	const [additionalCost, setAdditionalCost] = useState(0);
 	const [equipmentDepreciation, setEquipmentDepreciation] = useState("");
 	const [serviceSubscriptions, setServiceSubscriptions] = useState("");
 	const [customFields, setCustomFields] = useState([
@@ -58,6 +60,8 @@ const CreateReportForm = () => {
 			setReportName(report.reportname || "");
 			setBudget(report.budget ? report.budget.toString() : "");
 			setTotalCost(report.totalcost || 0);
+			setEquipmentDepreciation(report.deprecationcost || 0);
+			setServiceSubscriptions(report.subscriptioncost || 0);
 		} else {
 			setReportName("");
 			setBudget("");
@@ -104,7 +108,10 @@ const CreateReportForm = () => {
 			const amount = parseInt(field.amount) || 0;
 			return acc + amount;
 		}, 0);
-
+		setDevCost(
+			projectManagerCost + analystCost + designCost + developerCost + testCost
+		);
+		setAdditionalCost(customFieldsAmount);
 		setTotalCost(
 			projectManagerCost +
 				analystCost +
@@ -138,6 +145,10 @@ const CreateReportForm = () => {
 			totalcost: totalCost,
 			reportcreateddate: reportdate,
 			budget: parseInt(budget),
+			devcost: devCost,
+			deprecationcost: parseInt(equipmentDepreciation),
+			subscriptioncost: parseInt(serviceSubscriptions),
+			additionalcost: additionalCost,
 		};
 
 		try {

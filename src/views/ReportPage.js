@@ -129,7 +129,6 @@ const ReportDetails = () => {
 					sx={{
 						display: "flex",
 						flexDirection: "column",
-						paddingBottom: "16px",
 						borderTop: "1px solid",
 						borderBottom: "1px solid",
 						borderColor: theme.palette.custom.gray,
@@ -137,13 +136,41 @@ const ReportDetails = () => {
 					<Typography
 						variant="h4"
 						sx={{ fontWeight: "700", marginTop: "8px" }}>
-						<strong>Calculated cost: </strong> {report.totalcost} $
-					</Typography>
-					<Typography
-						variant="h6"
-						sx={{ fontWeight: "700", marginTop: "8px" }}>
 						<strong>Budget:</strong> {report.budget} $
 					</Typography>
+					<Typography
+						variant="h4"
+						sx={{ fontWeight: "700", marginTop: "8px" }}>
+						<strong>Calculated cost: </strong> {report.totalcost} $
+					</Typography>
+					<Box
+						sx={{
+							display: "flex",
+							flexDirection: "column",
+							borderTop: "1px solid",
+							borderColor: theme.palette.custom.gray,
+						}}>
+						<Typography
+							variant="h6"
+							sx={{ fontWeight: "700", marginTop: "8px" }}>
+							<strong>Development cost:</strong> {report.devcost} $
+						</Typography>
+						<Typography
+							variant="h6"
+							sx={{ fontWeight: "700", marginTop: "8px" }}>
+							<strong>Deprecation cost:</strong> {report.deprecationcost} $
+						</Typography>
+						<Typography
+							variant="h6"
+							sx={{ fontWeight: "700", marginTop: "8px" }}>
+							<strong>Subscription cost:</strong> {report.subscriptioncost} $
+						</Typography>
+						<Typography
+							variant="h6"
+							sx={{ fontWeight: "700", marginTop: "8px" }}>
+							<strong>Additional cost:</strong> {report.additionalcost} $
+						</Typography>
+					</Box>
 				</Box>
 				<Box sx={{ marginTop: "16px", display: "flex", gap: "20px" }}>
 					<Typography variant="body1">
