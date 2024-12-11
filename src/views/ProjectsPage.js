@@ -39,9 +39,7 @@ const ProjectsPage = () => {
 
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const qParams = new URLSearchParams(location.search);
-	const pageFromURL = parseInt(qParams.get("page") || 1);
-	const [page, setPage] = useState(pageFromURL);
+	const [page, setPage] = useState(1);
 
 	useEffect(() => {
 		const token = localStorage.getItem("token");
@@ -88,7 +86,7 @@ const ProjectsPage = () => {
 	);
 
 	const handleEditProject = (id) => {
-		navigate(`/home/projects/${id}`);
+		navigate(`/home/projects/${id}?page=${page}`);
 	};
 
 	const handleOpenDeleteDialog = (projectId) => {
