@@ -4,7 +4,7 @@ Calculate project development cost at ease
 
 ## Screenshot
 
-![Projects page](/docs/img/projects-page.png)
+![Projects page](/docs/img/pages/projects/projects-page.png)
 
 ## Features (client app)
 
