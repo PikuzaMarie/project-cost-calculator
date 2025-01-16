@@ -182,7 +182,7 @@ const EditProject = () => {
 						Projects
 					</Link>
 					<Typography sx={{ color: theme.palette.black.main }}>
-						{project.projectname}
+						{project.project_name}
 					</Typography>
 				</Breadcrumbs>
 				<Box
